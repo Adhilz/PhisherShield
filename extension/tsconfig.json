@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "es5", // You can keep this at es5 for broader compatibility, or change to "es2020" or "esnext" for newer features if your target browsers support it. "es2020" is a good modern default for extensions.
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": false, // <--- CHANGE THIS TO FALSE
+    "jsx": "react-jsx"
+  },
+  "include": [
+    "src" // This is fine, it includes everything under the 'src' directory
+  ]
+}

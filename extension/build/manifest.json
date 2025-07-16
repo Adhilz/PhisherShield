@@ -1,0 +1,35 @@
+{
+  "manifest_version": 3,
+  "name": "PhisherShield",
+  "version": "1.0",
+  "description": "An anti-phishing browser extension.",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png"
+    }
+  },
+  "background": {
+    "service_worker": "dist/backgroundBundle.js"  // <--- THIS LINE IS CRUCIAL
+  },
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "webRequest"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [ "alert.html", "dist/alert.css", "dist/alertPageBundle.js" ],
+      "matches": [ "<all_urls>" ]
+    }
+  ]
+}
