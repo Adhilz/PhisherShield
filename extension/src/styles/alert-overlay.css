@@ -1,0 +1,160 @@
+/* --- OVERLAY CONTAINER --- */
+#phisher-shield-alert-overlay-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.65);
+    z-index: 2147483647;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: auto;
+}
+
+/* --- ALERT BOX --- */
+.phishershield-alert-box {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #fff;
+    border-radius: 16px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+    max-width: 520px;
+    width: 90%;
+    padding: 35px 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    animation: fadeInScale 0.3s ease-out forwards;
+    box-sizing: border-box;
+}
+
+/* --- HEADING --- */
+.phishershield-alert-box h1 {
+    font-size: 2em;
+    font-weight: 700;
+    text-align: center;
+    margin: 0;
+    line-height: 1.3;
+}
+
+.phishershield-alert-box h1.warning {
+    color: #dc3545;
+}
+
+.phishershield-alert-box h1.safe {
+    color: #28a745;
+}
+
+/* --- URL --- */
+.phishershield-alert-box p {
+    font-size: 1em;
+    color: #444;
+    margin: 0;
+}
+
+.phishershield-alert-box a {
+    color: #007bff;
+    text-decoration: underline;
+    word-break: break-word;
+}
+
+/* --- TRUST SCORE BADGE --- */
+.phishershield-score-display {
+    padding: 10px 20px;
+    border-radius: 999px;
+    font-size: 1.1em;
+    font-weight: bold;
+    text-align: center;
+    display: inline-block;
+    margin-top: 5px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.phishershield-score-display.safe {
+    background-color: #e6ffed;
+    border: 1px solid #28a745;
+    color: #28a745;
+}
+
+.phishershield-score-display.suspicious {
+    background-color: #ffe6e6;
+    border: 1px solid #dc3545;
+    color: #dc3545;
+}
+
+/* --- ALERT MESSAGE --- */
+.phishershield-alert-banner {
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 0.95em;
+    line-height: 1.5;
+    width: 100%;
+    text-align: left;
+    box-sizing: border-box;
+}
+
+.phishershield-alert-banner.safe {
+    background-color: #e6ffe6;
+    border: 1px solid #4CAF50;
+    color: #2E7D32;
+}
+
+.phishershield-alert-banner.suspicious {
+    background-color: #fff3e0;
+    border: 1px solid #FF9800;
+    color: #E65100;
+}
+
+/* --- BUTTONS --- */
+.phishershield-buttons-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.phishershield-buttons-container button {
+    flex: 1;
+    padding: 12px 18px;
+    font-size: 1em;
+    font-weight: bold;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.1s ease-in-out, background-color 0.2s;
+    white-space: nowrap;
+}
+
+.phishershield-buttons-container button:hover {
+    transform: translateY(-2px);
+}
+
+.report-btn {
+    background-color: #ffc107;
+    color: #212121;
+}
+
+.block-btn {
+    background-color: #dc3545;
+    color: white;
+}
+
+.continue-btn {
+    background-color: #007bff;
+    color: white;
+}
+
+/* --- ANIMATION --- */
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}

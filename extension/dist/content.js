@@ -2,6 +2,311 @@
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
+/***/ "./node_modules/css-loader/dist/cjs.js!./src/styles/alert-overlay.css":
+/*!****************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js!./src/styles/alert-overlay.css ***!
+  \****************************************************************************/
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../node_modules/css-loader/dist/runtime/sourceMaps.js */ "./node_modules/css-loader/dist/runtime/sourceMaps.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
+// Imports
+
+
+var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, `/* --- OVERLAY CONTAINER --- */
+#phisher-shield-alert-overlay-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.65);
+    z-index: 2147483647;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: auto;
+}
+
+/* --- ALERT BOX --- */
+.phishershield-alert-box {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #fff;
+    border-radius: 16px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+    max-width: 520px;
+    width: 90%;
+    padding: 35px 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    animation: fadeInScale 0.3s ease-out forwards;
+    box-sizing: border-box;
+}
+
+/* --- HEADING --- */
+.phishershield-alert-box h1 {
+    font-size: 2em;
+    font-weight: 700;
+    text-align: center;
+    margin: 0;
+    line-height: 1.3;
+}
+
+.phishershield-alert-box h1.warning {
+    color: #dc3545;
+}
+
+.phishershield-alert-box h1.safe {
+    color: #28a745;
+}
+
+/* --- URL --- */
+.phishershield-alert-box p {
+    font-size: 1em;
+    color: #444;
+    margin: 0;
+}
+
+.phishershield-alert-box a {
+    color: #007bff;
+    text-decoration: underline;
+    word-break: break-word;
+}
+
+/* --- TRUST SCORE BADGE --- */
+.phishershield-score-display {
+    padding: 10px 20px;
+    border-radius: 999px;
+    font-size: 1.1em;
+    font-weight: bold;
+    text-align: center;
+    display: inline-block;
+    margin-top: 5px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.phishershield-score-display.safe {
+    background-color: #e6ffed;
+    border: 1px solid #28a745;
+    color: #28a745;
+}
+
+.phishershield-score-display.suspicious {
+    background-color: #ffe6e6;
+    border: 1px solid #dc3545;
+    color: #dc3545;
+}
+
+/* --- ALERT MESSAGE --- */
+.phishershield-alert-banner {
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 0.95em;
+    line-height: 1.5;
+    width: 100%;
+    text-align: left;
+    box-sizing: border-box;
+}
+
+.phishershield-alert-banner.safe {
+    background-color: #e6ffe6;
+    border: 1px solid #4CAF50;
+    color: #2E7D32;
+}
+
+.phishershield-alert-banner.suspicious {
+    background-color: #fff3e0;
+    border: 1px solid #FF9800;
+    color: #E65100;
+}
+
+/* --- BUTTONS --- */
+.phishershield-buttons-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.phishershield-buttons-container button {
+    flex: 1;
+    padding: 12px 18px;
+    font-size: 1em;
+    font-weight: bold;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.1s ease-in-out, background-color 0.2s;
+    white-space: nowrap;
+}
+
+.phishershield-buttons-container button:hover {
+    transform: translateY(-2px);
+}
+
+.report-btn {
+    background-color: #ffc107;
+    color: #212121;
+}
+
+.block-btn {
+    background-color: #dc3545;
+    color: white;
+}
+
+.continue-btn {
+    background-color: #007bff;
+    color: white;
+}
+
+/* --- ANIMATION --- */
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+`, "",{"version":3,"sources":["webpack://./src/styles/alert-overlay.css"],"names":[],"mappings":"AAAA,8BAA8B;AAC9B;IACI,eAAe;IACf,MAAM;IACN,OAAO;IACP,WAAW;IACX,YAAY;IACZ,qCAAqC;IACrC,mBAAmB;IACnB,aAAa;IACb,uBAAuB;IACvB,mBAAmB;IACnB,oBAAoB;AACxB;;AAEA,sBAAsB;AACtB;IACI,4DAA4D;IAC5D,sBAAsB;IACtB,mBAAmB;IACnB,2CAA2C;IAC3C,gBAAgB;IAChB,UAAU;IACV,kBAAkB;IAClB,aAAa;IACb,sBAAsB;IACtB,mBAAmB;IACnB,SAAS;IACT,6CAA6C;IAC7C,sBAAsB;AAC1B;;AAEA,oBAAoB;AACpB;IACI,cAAc;IACd,gBAAgB;IAChB,kBAAkB;IAClB,SAAS;IACT,gBAAgB;AACpB;;AAEA;IACI,cAAc;AAClB;;AAEA;IACI,cAAc;AAClB;;AAEA,gBAAgB;AAChB;IACI,cAAc;IACd,WAAW;IACX,SAAS;AACb;;AAEA;IACI,cAAc;IACd,0BAA0B;IAC1B,sBAAsB;AAC1B;;AAEA,8BAA8B;AAC9B;IACI,kBAAkB;IAClB,oBAAoB;IACpB,gBAAgB;IAChB,iBAAiB;IACjB,kBAAkB;IAClB,qBAAqB;IACrB,eAAe;IACf,yCAAyC;AAC7C;;AAEA;IACI,yBAAyB;IACzB,yBAAyB;IACzB,cAAc;AAClB;;AAEA;IACI,yBAAyB;IACzB,yBAAyB;IACzB,cAAc;AAClB;;AAEA,0BAA0B;AAC1B;IACI,kBAAkB;IAClB,kBAAkB;IAClB,iBAAiB;IACjB,gBAAgB;IAChB,WAAW;IACX,gBAAgB;IAChB,sBAAsB;AAC1B;;AAEA;IACI,yBAAyB;IACzB,yBAAyB;IACzB,cAAc;AAClB;;AAEA;IACI,yBAAyB;IACzB,yBAAyB;IACzB,cAAc;AAClB;;AAEA,oBAAoB;AACpB;IACI,aAAa;IACb,8BAA8B;IAC9B,SAAS;IACT,WAAW;IACX,gBAAgB;AACpB;;AAEA;IACI,OAAO;IACP,kBAAkB;IAClB,cAAc;IACd,iBAAiB;IACjB,kBAAkB;IAClB,YAAY;IACZ,eAAe;IACf,6DAA6D;IAC7D,mBAAmB;AACvB;;AAEA;IACI,2BAA2B;AAC/B;;AAEA;IACI,yBAAyB;IACzB,cAAc;AAClB;;AAEA;IACI,yBAAyB;IACzB,YAAY;AAChB;;AAEA;IACI,yBAAyB;IACzB,YAAY;AAChB;;AAEA,sBAAsB;AACtB;IACI;QACI,UAAU;QACV,sBAAsB;IAC1B;IACA;QACI,UAAU;QACV,mBAAmB;IACvB;AACJ","sourcesContent":["/* --- OVERLAY CONTAINER --- */\r\n#phisher-shield-alert-overlay-container {\r\n    position: fixed;\r\n    top: 0;\r\n    left: 0;\r\n    width: 100%;\r\n    height: 100%;\r\n    background-color: rgba(0, 0, 0, 0.65);\r\n    z-index: 2147483647;\r\n    display: flex;\r\n    justify-content: center;\r\n    align-items: center;\r\n    pointer-events: auto;\r\n}\r\n\r\n/* --- ALERT BOX --- */\r\n.phishershield-alert-box {\r\n    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\r\n    background-color: #fff;\r\n    border-radius: 16px;\r\n    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);\r\n    max-width: 520px;\r\n    width: 90%;\r\n    padding: 35px 30px;\r\n    display: flex;\r\n    flex-direction: column;\r\n    align-items: center;\r\n    gap: 16px;\r\n    animation: fadeInScale 0.3s ease-out forwards;\r\n    box-sizing: border-box;\r\n}\r\n\r\n/* --- HEADING --- */\r\n.phishershield-alert-box h1 {\r\n    font-size: 2em;\r\n    font-weight: 700;\r\n    text-align: center;\r\n    margin: 0;\r\n    line-height: 1.3;\r\n}\r\n\r\n.phishershield-alert-box h1.warning {\r\n    color: #dc3545;\r\n}\r\n\r\n.phishershield-alert-box h1.safe {\r\n    color: #28a745;\r\n}\r\n\r\n/* --- URL --- */\r\n.phishershield-alert-box p {\r\n    font-size: 1em;\r\n    color: #444;\r\n    margin: 0;\r\n}\r\n\r\n.phishershield-alert-box a {\r\n    color: #007bff;\r\n    text-decoration: underline;\r\n    word-break: break-word;\r\n}\r\n\r\n/* --- TRUST SCORE BADGE --- */\r\n.phishershield-score-display {\r\n    padding: 10px 20px;\r\n    border-radius: 999px;\r\n    font-size: 1.1em;\r\n    font-weight: bold;\r\n    text-align: center;\r\n    display: inline-block;\r\n    margin-top: 5px;\r\n    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);\r\n}\r\n\r\n.phishershield-score-display.safe {\r\n    background-color: #e6ffed;\r\n    border: 1px solid #28a745;\r\n    color: #28a745;\r\n}\r\n\r\n.phishershield-score-display.suspicious {\r\n    background-color: #ffe6e6;\r\n    border: 1px solid #dc3545;\r\n    color: #dc3545;\r\n}\r\n\r\n/* --- ALERT MESSAGE --- */\r\n.phishershield-alert-banner {\r\n    padding: 12px 16px;\r\n    border-radius: 8px;\r\n    font-size: 0.95em;\r\n    line-height: 1.5;\r\n    width: 100%;\r\n    text-align: left;\r\n    box-sizing: border-box;\r\n}\r\n\r\n.phishershield-alert-banner.safe {\r\n    background-color: #e6ffe6;\r\n    border: 1px solid #4CAF50;\r\n    color: #2E7D32;\r\n}\r\n\r\n.phishershield-alert-banner.suspicious {\r\n    background-color: #fff3e0;\r\n    border: 1px solid #FF9800;\r\n    color: #E65100;\r\n}\r\n\r\n/* --- BUTTONS --- */\r\n.phishershield-buttons-container {\r\n    display: flex;\r\n    justify-content: space-between;\r\n    gap: 12px;\r\n    width: 100%;\r\n    margin-top: 10px;\r\n}\r\n\r\n.phishershield-buttons-container button {\r\n    flex: 1;\r\n    padding: 12px 18px;\r\n    font-size: 1em;\r\n    font-weight: bold;\r\n    border-radius: 8px;\r\n    border: none;\r\n    cursor: pointer;\r\n    transition: transform 0.1s ease-in-out, background-color 0.2s;\r\n    white-space: nowrap;\r\n}\r\n\r\n.phishershield-buttons-container button:hover {\r\n    transform: translateY(-2px);\r\n}\r\n\r\n.report-btn {\r\n    background-color: #ffc107;\r\n    color: #212121;\r\n}\r\n\r\n.block-btn {\r\n    background-color: #dc3545;\r\n    color: white;\r\n}\r\n\r\n.continue-btn {\r\n    background-color: #007bff;\r\n    color: white;\r\n}\r\n\r\n/* --- ANIMATION --- */\r\n@keyframes fadeInScale {\r\n    from {\r\n        opacity: 0;\r\n        transform: scale(0.95);\r\n    }\r\n    to {\r\n        opacity: 1;\r\n        transform: scale(1);\r\n    }\r\n}\r\n"],"sourceRoot":""}]);
+// Exports
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/dist/runtime/api.js":
+/*!*****************************************************!*\
+  !*** ./node_modules/css-loader/dist/runtime/api.js ***!
+  \*****************************************************/
+/***/ ((module) => {
+
+
+
+/*
+  MIT License http://www.opensource.org/licenses/mit-license.php
+  Author Tobias Koppers @sokra
+*/
+module.exports = function (cssWithMappingToString) {
+  var list = [];
+
+  // return the list of modules as css string
+  list.toString = function toString() {
+    return this.map(function (item) {
+      var content = "";
+      var needLayer = typeof item[5] !== "undefined";
+      if (item[4]) {
+        content += "@supports (".concat(item[4], ") {");
+      }
+      if (item[2]) {
+        content += "@media ".concat(item[2], " {");
+      }
+      if (needLayer) {
+        content += "@layer".concat(item[5].length > 0 ? " ".concat(item[5]) : "", " {");
+      }
+      content += cssWithMappingToString(item);
+      if (needLayer) {
+        content += "}";
+      }
+      if (item[2]) {
+        content += "}";
+      }
+      if (item[4]) {
+        content += "}";
+      }
+      return content;
+    }).join("");
+  };
+
+  // import a list of modules into the list
+  list.i = function i(modules, media, dedupe, supports, layer) {
+    if (typeof modules === "string") {
+      modules = [[null, modules, undefined]];
+    }
+    var alreadyImportedModules = {};
+    if (dedupe) {
+      for (var k = 0; k < this.length; k++) {
+        var id = this[k][0];
+        if (id != null) {
+          alreadyImportedModules[id] = true;
+        }
+      }
+    }
+    for (var _k = 0; _k < modules.length; _k++) {
+      var item = [].concat(modules[_k]);
+      if (dedupe && alreadyImportedModules[item[0]]) {
+        continue;
+      }
+      if (typeof layer !== "undefined") {
+        if (typeof item[5] === "undefined") {
+          item[5] = layer;
+        } else {
+          item[1] = "@layer".concat(item[5].length > 0 ? " ".concat(item[5]) : "", " {").concat(item[1], "}");
+          item[5] = layer;
+        }
+      }
+      if (media) {
+        if (!item[2]) {
+          item[2] = media;
+        } else {
+          item[1] = "@media ".concat(item[2], " {").concat(item[1], "}");
+          item[2] = media;
+        }
+      }
+      if (supports) {
+        if (!item[4]) {
+          item[4] = "".concat(supports);
+        } else {
+          item[1] = "@supports (".concat(item[4], ") {").concat(item[1], "}");
+          item[4] = supports;
+        }
+      }
+      list.push(item);
+    }
+  };
+  return list;
+};
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/dist/runtime/sourceMaps.js":
+/*!************************************************************!*\
+  !*** ./node_modules/css-loader/dist/runtime/sourceMaps.js ***!
+  \************************************************************/
+/***/ ((module) => {
+
+
+
+module.exports = function (item) {
+  var content = item[1];
+  var cssMapping = item[3];
+  if (!cssMapping) {
+    return content;
+  }
+  if (typeof btoa === "function") {
+    var base64 = btoa(unescape(encodeURIComponent(JSON.stringify(cssMapping))));
+    var data = "sourceMappingURL=data:application/json;charset=utf-8;base64,".concat(base64);
+    var sourceMapping = "/*# ".concat(data, " */");
+    return [content].concat([sourceMapping]).join("\n");
+  }
+  return [content].join("\n");
+};
+
+/***/ }),
+
 /***/ "./node_modules/react-dom/cjs/react-dom.development.js":
 /*!*************************************************************!*\
   !*** ./node_modules/react-dom/cjs/react-dom.development.js ***!
@@ -34786,6 +35091,377 @@ if (false) // removed by dead control flow
 }
 
 
+/***/ }),
+
+/***/ "./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js":
+/*!****************************************************************************!*\
+  !*** ./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js ***!
+  \****************************************************************************/
+/***/ ((module) => {
+
+
+
+var stylesInDOM = [];
+function getIndexByIdentifier(identifier) {
+  var result = -1;
+  for (var i = 0; i < stylesInDOM.length; i++) {
+    if (stylesInDOM[i].identifier === identifier) {
+      result = i;
+      break;
+    }
+  }
+  return result;
+}
+function modulesToDom(list, options) {
+  var idCountMap = {};
+  var identifiers = [];
+  for (var i = 0; i < list.length; i++) {
+    var item = list[i];
+    var id = options.base ? item[0] + options.base : item[0];
+    var count = idCountMap[id] || 0;
+    var identifier = "".concat(id, " ").concat(count);
+    idCountMap[id] = count + 1;
+    var indexByIdentifier = getIndexByIdentifier(identifier);
+    var obj = {
+      css: item[1],
+      media: item[2],
+      sourceMap: item[3],
+      supports: item[4],
+      layer: item[5]
+    };
+    if (indexByIdentifier !== -1) {
+      stylesInDOM[indexByIdentifier].references++;
+      stylesInDOM[indexByIdentifier].updater(obj);
+    } else {
+      var updater = addElementStyle(obj, options);
+      options.byIndex = i;
+      stylesInDOM.splice(i, 0, {
+        identifier: identifier,
+        updater: updater,
+        references: 1
+      });
+    }
+    identifiers.push(identifier);
+  }
+  return identifiers;
+}
+function addElementStyle(obj, options) {
+  var api = options.domAPI(options);
+  api.update(obj);
+  var updater = function updater(newObj) {
+    if (newObj) {
+      if (newObj.css === obj.css && newObj.media === obj.media && newObj.sourceMap === obj.sourceMap && newObj.supports === obj.supports && newObj.layer === obj.layer) {
+        return;
+      }
+      api.update(obj = newObj);
+    } else {
+      api.remove();
+    }
+  };
+  return updater;
+}
+module.exports = function (list, options) {
+  options = options || {};
+  list = list || [];
+  var lastIdentifiers = modulesToDom(list, options);
+  return function update(newList) {
+    newList = newList || [];
+    for (var i = 0; i < lastIdentifiers.length; i++) {
+      var identifier = lastIdentifiers[i];
+      var index = getIndexByIdentifier(identifier);
+      stylesInDOM[index].references--;
+    }
+    var newLastIdentifiers = modulesToDom(newList, options);
+    for (var _i = 0; _i < lastIdentifiers.length; _i++) {
+      var _identifier = lastIdentifiers[_i];
+      var _index = getIndexByIdentifier(_identifier);
+      if (stylesInDOM[_index].references === 0) {
+        stylesInDOM[_index].updater();
+        stylesInDOM.splice(_index, 1);
+      }
+    }
+    lastIdentifiers = newLastIdentifiers;
+  };
+};
+
+/***/ }),
+
+/***/ "./node_modules/style-loader/dist/runtime/insertBySelector.js":
+/*!********************************************************************!*\
+  !*** ./node_modules/style-loader/dist/runtime/insertBySelector.js ***!
+  \********************************************************************/
+/***/ ((module) => {
+
+
+
+var memo = {};
+
+/* istanbul ignore next  */
+function getTarget(target) {
+  if (typeof memo[target] === "undefined") {
+    var styleTarget = document.querySelector(target);
+
+    // Special case to return head of iframe instead of iframe itself
+    if (window.HTMLIFrameElement && styleTarget instanceof window.HTMLIFrameElement) {
+      try {
+        // This will throw an exception if access to iframe is blocked
+        // due to cross-origin restrictions
+        styleTarget = styleTarget.contentDocument.head;
+      } catch (e) {
+        // istanbul ignore next
+        styleTarget = null;
+      }
+    }
+    memo[target] = styleTarget;
+  }
+  return memo[target];
+}
+
+/* istanbul ignore next  */
+function insertBySelector(insert, style) {
+  var target = getTarget(insert);
+  if (!target) {
+    throw new Error("Couldn't find a style target. This probably means that the value for the 'insert' parameter is invalid.");
+  }
+  target.appendChild(style);
+}
+module.exports = insertBySelector;
+
+/***/ }),
+
+/***/ "./node_modules/style-loader/dist/runtime/insertStyleElement.js":
+/*!**********************************************************************!*\
+  !*** ./node_modules/style-loader/dist/runtime/insertStyleElement.js ***!
+  \**********************************************************************/
+/***/ ((module) => {
+
+
+
+/* istanbul ignore next  */
+function insertStyleElement(options) {
+  var element = document.createElement("style");
+  options.setAttributes(element, options.attributes);
+  options.insert(element, options.options);
+  return element;
+}
+module.exports = insertStyleElement;
+
+/***/ }),
+
+/***/ "./node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js":
+/*!**********************************************************************************!*\
+  !*** ./node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js ***!
+  \**********************************************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+
+
+/* istanbul ignore next  */
+function setAttributesWithoutAttributes(styleElement) {
+  var nonce =  true ? __webpack_require__.nc : 0;
+  if (nonce) {
+    styleElement.setAttribute("nonce", nonce);
+  }
+}
+module.exports = setAttributesWithoutAttributes;
+
+/***/ }),
+
+/***/ "./node_modules/style-loader/dist/runtime/styleDomAPI.js":
+/*!***************************************************************!*\
+  !*** ./node_modules/style-loader/dist/runtime/styleDomAPI.js ***!
+  \***************************************************************/
+/***/ ((module) => {
+
+
+
+/* istanbul ignore next  */
+function apply(styleElement, options, obj) {
+  var css = "";
+  if (obj.supports) {
+    css += "@supports (".concat(obj.supports, ") {");
+  }
+  if (obj.media) {
+    css += "@media ".concat(obj.media, " {");
+  }
+  var needLayer = typeof obj.layer !== "undefined";
+  if (needLayer) {
+    css += "@layer".concat(obj.layer.length > 0 ? " ".concat(obj.layer) : "", " {");
+  }
+  css += obj.css;
+  if (needLayer) {
+    css += "}";
+  }
+  if (obj.media) {
+    css += "}";
+  }
+  if (obj.supports) {
+    css += "}";
+  }
+  var sourceMap = obj.sourceMap;
+  if (sourceMap && typeof btoa !== "undefined") {
+    css += "\n/*# sourceMappingURL=data:application/json;base64,".concat(btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))), " */");
+  }
+
+  // For old IE
+  /* istanbul ignore if  */
+  options.styleTagTransform(css, styleElement, options.options);
+}
+function removeStyleElement(styleElement) {
+  // istanbul ignore if
+  if (styleElement.parentNode === null) {
+    return false;
+  }
+  styleElement.parentNode.removeChild(styleElement);
+}
+
+/* istanbul ignore next  */
+function domAPI(options) {
+  if (typeof document === "undefined") {
+    return {
+      update: function update() {},
+      remove: function remove() {}
+    };
+  }
+  var styleElement = options.insertStyleElement(options);
+  return {
+    update: function update(obj) {
+      apply(styleElement, options, obj);
+    },
+    remove: function remove() {
+      removeStyleElement(styleElement);
+    }
+  };
+}
+module.exports = domAPI;
+
+/***/ }),
+
+/***/ "./node_modules/style-loader/dist/runtime/styleTagTransform.js":
+/*!*********************************************************************!*\
+  !*** ./node_modules/style-loader/dist/runtime/styleTagTransform.js ***!
+  \*********************************************************************/
+/***/ ((module) => {
+
+
+
+/* istanbul ignore next  */
+function styleTagTransform(css, styleElement) {
+  if (styleElement.styleSheet) {
+    styleElement.styleSheet.cssText = css;
+  } else {
+    while (styleElement.firstChild) {
+      styleElement.removeChild(styleElement.firstChild);
+    }
+    styleElement.appendChild(document.createTextNode(css));
+  }
+}
+module.exports = styleTagTransform;
+
+/***/ }),
+
+/***/ "./src/pages/AlertPage.tsx":
+/*!*********************************!*\
+  !*** ./src/pages/AlertPage.tsx ***!
+  \*********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+
+var AlertPage = function (_a) {
+    var alertData = _a.alertData, onProceed = _a.onProceed, onGoBack = _a.onGoBack;
+    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { style: {
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 2147483647,
+            fontFamily: 'sans-serif',
+        }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { style: {
+                backgroundColor: 'white',
+                padding: '20px',
+                borderRadius: '8px',
+                maxWidth: '500px',
+                textAlign: 'center',
+            }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("h1", { style: { color: 'red' }, children: "\u26A0\uFE0F Warning: Potential Threat!" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("p", { children: "This page has been flagged as potentially unsafe." }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { style: { textAlign: 'left', margin: '20px 0' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("p", { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("strong", { children: "URL:" }), " ", alertData.url] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("p", { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("strong", { children: "Trust Score:" }), " ", alertData.score] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("p", { children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("strong", { children: "Reasons:" }) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("ul", { children: alertData.deductions.map(function (reason, index) { return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("li", { children: reason }, index)); }) })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("button", { onClick: onGoBack, style: {
+                        padding: '10px 20px',
+                        marginRight: '10px',
+                        cursor: 'pointer',
+                        backgroundColor: '#e0e0e0',
+                        border: 'none',
+                        borderRadius: '5px',
+                    }, children: "Go Back (Recommended)" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("button", { onClick: onProceed, style: {
+                        padding: '10px 20px',
+                        cursor: 'pointer',
+                        backgroundColor: '#ffcccc',
+                        border: 'none',
+                        borderRadius: '5px',
+                    }, children: "Proceed Anyway" })] }) }));
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (AlertPage);
+
+
+/***/ }),
+
+/***/ "./src/styles/alert-overlay.css":
+/*!**************************************!*\
+  !*** ./src/styles/alert-overlay.css ***!
+  \**************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! !../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */ "./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! !../../node_modules/style-loader/dist/runtime/styleDomAPI.js */ "./node_modules/style-loader/dist/runtime/styleDomAPI.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! !../../node_modules/style-loader/dist/runtime/insertBySelector.js */ "./node_modules/style-loader/dist/runtime/insertBySelector.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! !../../node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js */ "./node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! !../../node_modules/style-loader/dist/runtime/insertStyleElement.js */ "./node_modules/style-loader/dist/runtime/insertStyleElement.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! !../../node_modules/style-loader/dist/runtime/styleTagTransform.js */ "./node_modules/style-loader/dist/runtime/styleTagTransform.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _node_modules_css_loader_dist_cjs_js_alert_overlay_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! !!../../node_modules/css-loader/dist/cjs.js!./alert-overlay.css */ "./node_modules/css-loader/dist/cjs.js!./src/styles/alert-overlay.css");
+
+      
+      
+      
+      
+      
+      
+      
+      
+      
+
+var options = {};
+
+options.styleTagTransform = (_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default());
+options.setAttributes = (_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default());
+options.insert = _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default().bind(null, "head");
+options.domAPI = (_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default());
+options.insertStyleElement = (_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default());
+
+var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_alert_overlay_css__WEBPACK_IMPORTED_MODULE_6__["default"], options);
+
+
+
+
+       /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_alert_overlay_css__WEBPACK_IMPORTED_MODULE_6__["default"] && _node_modules_css_loader_dist_cjs_js_alert_overlay_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals ? _node_modules_css_loader_dist_cjs_js_alert_overlay_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals : undefined);
+
+
 /***/ })
 
 /******/ 	});
@@ -34818,6 +35494,18 @@ if (false) // removed by dead control flow
 /******/ 	}
 /******/ 	
 /************************************************************************/
+/******/ 	/* webpack/runtime/compat get default export */
+/******/ 	(() => {
+/******/ 		// getDefaultExport function for compatibility with non-harmony modules
+/******/ 		__webpack_require__.n = (module) => {
+/******/ 			var getter = module && module.__esModule ?
+/******/ 				() => (module['default']) :
+/******/ 				() => (module);
+/******/ 			__webpack_require__.d(getter, { a: getter });
+/******/ 			return getter;
+/******/ 		};
+/******/ 	})();
+/******/ 	
 /******/ 	/* webpack/runtime/define property getters */
 /******/ 	(() => {
 /******/ 		// define getter functions for harmony exports
@@ -34855,41 +35543,226 @@ if (false) // removed by dead control flow
 /******/ 		};
 /******/ 	})();
 /******/ 	
+/******/ 	/* webpack/runtime/nonce */
+/******/ 	(() => {
+/******/ 		__webpack_require__.nc = undefined;
+/******/ 	})();
+/******/ 	
 /************************************************************************/
 var __webpack_exports__ = {};
 // This entry needs to be wrapped in an IIFE because it needs to be isolated against other modules in the chunk.
 (() => {
-/*!*********************************!*\
-  !*** ./src/pages/AlertPage.tsx ***!
-  \*********************************/
+/*!************************!*\
+  !*** ./src/content.ts ***!
+  \************************/
 __webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var react_dom_client__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-dom/client */ "./node_modules/react-dom/client.js");
+/* harmony import */ var _pages_AlertPage__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./pages/AlertPage */ "./src/pages/AlertPage.tsx");
+/* harmony import */ var _styles_alert_overlay_css__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./styles/alert-overlay.css */ "./src/styles/alert-overlay.css");
+// extension/src/content.ts
 
-
-var AlertPage = function () {
-    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { style: { padding: '20px', textAlign: 'center', fontFamily: 'sans-serif', backgroundColor: '#f0f0f0', border: '1px solid #ccc', borderRadius: '8px', maxWidth: '400px', margin: '50px auto' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("h1", { children: "PhisherShield Alert" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("p", { children: "This is a placeholder alert page!" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("p", { children: "Content will be dynamically loaded here based on scan results." }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("button", { onClick: function () { return window.history.back(); }, style: {
-                    padding: '10px 20px',
-                    backgroundColor: '#007bff',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '5px',
-                    cursor: 'pointer',
-                    marginTop: '15px'
-                }, children: "Go Back (Placeholder)" })] }));
-};
-// Mount the React app to the root div in alert.html
-var rootElement = document.getElementById('root');
-if (rootElement) {
-    react_dom_client__WEBPACK_IMPORTED_MODULE_1__.createRoot(rootElement).render((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(AlertPage, {}));
+ // Use ReactDOMClient for client-side rendering
+ // Import AlertPage component
+ // IMPORTS CSS AS A STRING
+console.log('PhisherShield content script loaded.');
+var alertOverlayRoot = null;
+var alertOverlayContainer = null;
+// --- Function to manually inject CSS ---
+function injectCss(cssString) {
+    var styleTag = document.createElement('style');
+    styleTag.textContent = cssString;
+    // Append to document.documentElement (<html>) for more robust full-screen coverage
+    (document.head || document.documentElement).appendChild(styleTag);
+    console.log('[Content Script] Injected alert-overlay.css dynamically.');
 }
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (AlertPage);
+// <--- CRITICAL FIX: Ensure this call is ONLY here, immediately after the function definition.
+// It will be the first function call after global variable declarations.
+injectCss(_styles_alert_overlay_css__WEBPACK_IMPORTED_MODULE_3__["default"]);
+// --- Function to detect client-side redirects ---
+// NEW: Global variable to track if redirect is initiated by our extension
+var initiatedByExtension = false;
+// Note: The listener to update initiatedByExtension is at the bottom of the file.
+function detectClientSideRedirects() {
+    var _a;
+    if (initiatedByExtension) {
+        console.log('[Content Script] Skipping redirect detection: Initiated by extension.');
+        return; // Don't flag our own redirects
+    }
+    var currentUrl = window.location.href;
+    var navigationEntries = window.performance.getEntriesByType('navigation');
+    var initialUrl = navigationEntries.length > 0 ? navigationEntries[0].name : currentUrl;
+    // 1. Detect if a redirect happened instantly on page load (via JS or Meta Refresh before DOM Ready)
+    if (currentUrl !== initialUrl) {
+        console.log("[Content Script] Detected instant redirect! From: ".concat(initialUrl, " To: ").concat(currentUrl));
+        chrome.runtime.sendMessage({
+            type: 'detectedRedirect',
+            initialUrl: initialUrl,
+            finalUrl: currentUrl,
+            redirectType: 'instant_onload'
+        }).catch(function (e) { return console.warn("[Content Script] Failed to send redirect message: ".concat(e.message)); });
+        return; // Exit after detecting instant redirect
+    }
+    // 2. Monitor for JavaScript redirects after page load
+    var originalLocationSetter = (_a = Object.getOwnPropertyDescriptor(window, 'location')) === null || _a === void 0 ? void 0 : _a.set;
+    if (originalLocationSetter) {
+        Object.defineProperty(window, 'location', {
+            configurable: true,
+            enumerable: true,
+            get: function () { return window.location.href; },
+            set: function (v) {
+                var newUrl = v.toString();
+                if (newUrl && newUrl !== window.location.href && !initiatedByExtension) {
+                    console.log("[Content Script] Detected JS redirect via setter! From: ".concat(window.location.href, " To: ").concat(newUrl));
+                    chrome.runtime.sendMessage({
+                        type: 'detectedRedirect',
+                        initialUrl: window.location.href,
+                        finalUrl: newUrl,
+                        redirectType: 'js_dynamic_setter'
+                    }).catch(function (e) { return console.warn("[Content Script] Failed to send redirect message: ".concat(e.message)); });
+                }
+                return originalLocationSetter.call(window.location, v);
+            }
+        });
+    }
+    else {
+        console.warn('[Content Script] Could not redefine window.location setter.');
+    }
+    // 3. Check for meta refresh tags
+    var metaRefresh = document.querySelector('meta[http-equiv="refresh"]');
+    if (metaRefresh && metaRefresh.content) {
+        var content = metaRefresh.content;
+        var match = content.match(/url=(.*)/i);
+        var redirectUrl = match ? match[1].trim() : '';
+        if (redirectUrl && redirectUrl !== currentUrl && !initiatedByExtension) {
+            console.log("[Content Script] Detected Meta Refresh redirect to: ".concat(redirectUrl));
+            chrome.runtime.sendMessage({
+                type: 'detectedRedirect',
+                initialUrl: currentUrl,
+                finalUrl: redirectUrl,
+                redirectType: 'meta_refresh'
+            }).catch(function (e) { return console.warn("[Content Script] Failed to send redirect message: ".concat(e.message)); });
+        }
+    }
+}
+// Add listeners to call redirect detection very early and after page load
+window.addEventListener('DOMContentLoaded', detectClientSideRedirects);
+window.addEventListener('load', detectClientSideRedirects);
+/**
+ * Extracts all visible text from the document body, excluding script and style tags.
+ */
+function extractPageText() {
+    var body = document.body;
+    if (!body)
+        return '';
+    var clone = body.cloneNode(true);
+    ['script', 'style', 'noscript', 'iframe', 'svg', 'canvas', 'img', 'video', 'audio', 'header', 'footer', 'nav', 'aside'].forEach(function (tag) {
+        clone.querySelectorAll(tag).forEach(function (el) { return el.remove(); });
+    });
+    var text = clone.textContent || '';
+    return text.replace(/\s+/g, ' ').trim();
+}
+/**
+ * Injects the AlertPage React component as a full-screen overlay.
+ */
+function displayPhishingAlertOverlay() {
+    console.log('[Content Script] Attempting to display alert overlay.');
+    if (alertOverlayRoot) {
+        console.log('[Content Script] Alert overlay already exists, not re-creating.');
+        return;
+    }
+    try {
+        alertOverlayContainer = document.createElement('div');
+        alertOverlayContainer.id = 'phisher-shield-alert-overlay-container';
+        Object.assign(alertOverlayContainer.style, {
+            position: 'fixed',
+            top: '0',
+            left: '0',
+            width: '100%',
+            height: '100%',
+            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+            zIndex: '2147483647',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            overflow: 'hidden',
+            pointerEvents: 'auto'
+        });
+        document.documentElement.appendChild(alertOverlayContainer);
+        alertOverlayRoot = react_dom_client__WEBPACK_IMPORTED_MODULE_1__.createRoot(alertOverlayContainer);
+        alertOverlayRoot.render(react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_pages_AlertPage__WEBPACK_IMPORTED_MODULE_2__["default"]));
+        document.body.style.overflow = 'hidden';
+        document.documentElement.style.overflow = 'hidden';
+        console.log('[Content Script] Alert overlay displayed successfully.');
+    }
+    catch (error) {
+        console.error('[Content Script] Error displaying alert overlay:', error);
+        if (alertOverlayContainer) {
+            alertOverlayContainer.remove();
+            alertOverlayContainer = null;
+            alertOverlayRoot = null;
+        }
+        document.body.style.overflow = '';
+        document.documentElement.style.overflow = '';
+    }
+}
+/**
+ * Removes the AlertPage React component and its container.
+ */
+function removePhishingAlertOverlay() {
+    console.log('[Content Script] Received request to remove phishing alert overlay.');
+    if (alertOverlayRoot && alertOverlayContainer) {
+        alertOverlayRoot.unmount();
+        alertOverlayContainer.remove();
+        alertOverlayRoot = null;
+        alertOverlayContainer = null;
+        document.body.style.overflow = '';
+        document.documentElement.style.overflow = '';
+        console.log('[Content Script] Alert overlay removed.');
+    }
+    else {
+        console.log('[Content Script] No alert overlay found to remove.');
+    }
+}
+// Listener for messages from the background script or popup
+console.log('[Content Script] Registering chrome.runtime.onMessage listener.');
+chrome.runtime.onMessage.addListener(function (message, _sender, sendResponse) {
+    console.log("[Content Script] Message RECEIVED: ".concat(message.type));
+    try {
+        if (message.type === 'extractPageContent') {
+            console.log('[Content Script] Handling extractPageContent.');
+            var pageContent = extractPageText();
+            sendResponse({ content: pageContent });
+            return true;
+        }
+        else if (message.type === 'displayPhishingAlert') {
+            console.log('[Content Script] Handling displayPhishingAlert.');
+            displayPhishingAlertOverlay();
+        }
+        else if (message.type === 'removePhishingAlert') {
+            console.log('[Content Script] Handling removePhishingAlert.');
+            removePhishingAlertOverlay();
+        }
+        // NEW: Update initiatedByExtension flag based on messages from background/popup
+        else if (message.type === 'userAction') { // User clicks 'continue'/'block'
+            initiatedByExtension = true;
+            setTimeout(function () { initiatedByExtension = false; }, 1000); // Reset after 1 second
+            console.log('[Content Script] Flagged as extension-initiated due to userAction.');
+        }
+        else if (message.type === 'removePhishingAlert') { // Background explicitly asks to remove
+            initiatedByExtension = true;
+            setTimeout(function () { initiatedByExtension = false; }, 1000);
+            console.log('[Content Script] Flagged as extension-initiated due to removePhishingAlert.');
+        }
+    }
+    catch (error) {
+        console.error("[Content Script] Error processing message type ".concat(message.type, ":"), error);
+    }
+});
 
 })();
 
 /******/ })()
 ;
-//# sourceMappingURL=alertPageBundle.js.map
+//# sourceMappingURL=content.js.map

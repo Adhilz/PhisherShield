@@ -34804,15 +34804,8 @@ var AlertBanner = function (_a) {
     var message = _a.message;
     if (!message)
         return null;
-    var bannerStyle = {
-        padding: '10px',
-        margin: '10px 0',
-        borderRadius: '5px',
-        backgroundColor: message.toLowerCase().includes('suspicious') ? '#ffe0e0' : '#e0ffe0',
-        color: message.toLowerCase().includes('suspicious') ? '#d32f2f' : '#2e7d32',
-        border: "1px solid ".concat(message.toLowerCase().includes('suspicious') ? '#f44336' : '#4caf50')
-    };
-    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { style: bannerStyle, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("p", { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("strong", { children: "Alert:" }), " ", message] }) }));
+    var isSuspiciousMessage = message.toLowerCase().includes('suspicious') || message.toLowerCase().includes('warning');
+    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { className: isSuspiciousMessage ? 'phishershield-alert-banner suspicious' : 'phishershield-alert-banner safe', children: [" ", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("p", { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("strong", { children: "Alert:" }), " ", message] })] }));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (AlertBanner);
 
@@ -34835,8 +34828,11 @@ var ReportPhishingForm = function (_a) {
     var url = _a.url;
     var handleSubmit = function (e) {
         e.preventDefault();
-        console.log("Reporting URL: ".concat(url));
-        alert("Thanks for reporting: ".concat(url, "! (This will be a proper form later)"));
+        var encodedUrl = encodeURIComponent(url);
+        var reportPage = "http://localhost:4000/report?url=".concat(encodedUrl);
+        // Open the report page in a new tab
+        window.open(reportPage, '_blank');
+        console.log("Redirecting to report page for URL: ".concat(url));
     };
     return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("form", { onSubmit: handleSubmit, style: { marginTop: '20px', padding: '15px', borderTop: '1px solid #eee' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("p", { children: "Is this site suspicious? Help us by reporting it!" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: "text", value: url, readOnly: true, style: { width: '100%', padding: '8px', marginBottom: '10px', border: '1px solid #ccc', borderRadius: '4px' } }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("button", { type: "submit", style: {
                     padding: '10px 15px',
@@ -34869,8 +34865,8 @@ var TrustScoreDisplay = function (_a) {
     if (trustScore === null) {
         return (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("p", { children: "Checking trust score..." });
     }
-    var scoreColor = trustScore >= 50 ? 'green' : 'red';
-    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { style: { margin: '10px 0', padding: '10px', border: "1px solid ".concat(scoreColor), borderRadius: '5px', textAlign: 'center' }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("p", { children: ["Trust Score: ", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("strong", { style: { color: scoreColor }, children: trustScore })] }) }));
+    var isSuspicious = trustScore < 50; // Determine based on threshold
+    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { className: isSuspicious ? 'phishershield-score-display suspicious' : 'phishershield-score-display safe', children: [" ", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("p", { children: ["Trust Score: ", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("strong", { children: trustScore })] }), " "] }));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (TrustScoreDisplay);
 
@@ -35013,47 +35009,87 @@ var __generator = (undefined && undefined.__generator) || function (thisArg, bod
 
 // extension/src/pages/Popup.tsx
 
- // Make sure ReactDOM is imported
 
 
 
+
+// Define cache duration (must match background.ts)
+var SCAN_CACHE_DURATION_MS = 5 * 60 * 1000; // Cache results for 5 minutes (5 * 60 seconds * 1000 ms)
 var Popup = function () {
     var _a = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(null), trustScore = _a[0], setTrustScore = _a[1];
     var _b = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(''), url = _b[0], setUrl = _b[1];
     var _c = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(''), alertMessage = _c[0], setAlertMessage = _c[1];
-    var _d = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(true), isLoading = _d[0], setIsLoading = _d[1]; // Added loading state
-    var _e = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(null), error = _e[0], setError = _e[1]; // Added error state
+    var _d = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(true), isLoading = _d[0], setIsLoading = _d[1];
+    var _e = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(null), error = _e[0], setError = _e[1];
     (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(function () {
-        // CORRECTED: Request the active tab's URL from the background script
-        // This requires "tabs" permission in manifest.json
+        console.log('[Popup] Popup component mounted. Initiating scan or cache check.');
+        // Query the active tab to get its ID and URL
         chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-            if (tabs[0] && tabs[0].url) {
-                var activeTabUrl = tabs[0].url;
-                setUrl(activeTabUrl);
-                fetchTrustScore(activeTabUrl); // Pass the correct URL to fetchTrustScore
+            if (tabs[0] && tabs[0].id && tabs[0].url) {
+                var activeTabId_1 = tabs[0].id;
+                var activeTabUrl_1 = tabs[0].url;
+                setUrl(activeTabUrl_1);
+                // Check cache first before fetching
+                chrome.storage.local.get('scanCache', function (result) {
+                    var scanCache = result.scanCache || {};
+                    var cachedEntry = scanCache[activeTabUrl_1];
+                    if (cachedEntry && (Date.now() - cachedEntry.timestamp < SCAN_CACHE_DURATION_MS)) {
+                        // Use cached data if fresh
+                        console.log("[Popup] Using cached scan result for ".concat(activeTabUrl_1, "."));
+                        setTrustScore(cachedEntry.score);
+                        setAlertMessage(cachedEntry.message);
+                        setIsLoading(false);
+                        setError(null);
+                    }
+                    else {
+                        // If no cache or stale cache, proceed with full scan
+                        console.log("[Popup] No fresh cache for ".concat(activeTabUrl_1, ", performing full scan."));
+                        // Request page content from content script if it's a web page
+                        if (activeTabUrl_1.startsWith('http://') || activeTabUrl_1.startsWith('https://')) {
+                            chrome.tabs.sendMessage(activeTabId_1, { type: 'extractPageContent' }, function (response) {
+                                // Check for runtime.lastError if content script isn't injected (e.g., on chrome:// pages, or after an error)
+                                if (chrome.runtime.lastError) {
+                                    console.warn("[Popup] Could not send message to content script (e.g., on chrome:// or error pages):", chrome.runtime.lastError.message);
+                                    // Proceed without content if message fails (e.g., content script not injected)
+                                    fetchAndSetScanResult(activeTabUrl_1, '');
+                                }
+                                else {
+                                    var pageContent = response ? response.content : '';
+                                    fetchAndSetScanResult(activeTabUrl_1, pageContent); // Pass content to fetch
+                                }
+                            });
+                        }
+                        else {
+                            // For non-web pages (chrome://, about:blank, file:///), just scan the URL without content
+                            console.log("[Popup] Scanning non-web URL: ".concat(activeTabUrl_1));
+                            fetchAndSetScanResult(activeTabUrl_1, '');
+                        }
+                    }
+                });
             }
             else {
-                setError('Could not get current tab URL. Make sure the extension has permissions.');
+                setError('Could not get current tab URL or Tab ID. Please ensure you are on a valid webpage.');
                 setIsLoading(false);
             }
         });
+        // Cleanup function for useEffect (optional, but good practice for event listeners if any)
+        return function () { console.log('[Popup] Popup component unmounted.'); };
     }, []); // Empty dependency array means this runs once on mount
-    var fetchTrustScore = function (targetUrl) { return __awaiter(void 0, void 0, void 0, function () {
-        var response, errorText, data, err_1;
+    // Renamed fetchTrustScore to fetchAndSetScanResult for clarity, it now always hits backend
+    var fetchAndSetScanResult = function (targetUrl, content) { return __awaiter(void 0, void 0, void 0, function () {
+        var response, errorText, data_1, err_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     setIsLoading(true);
-                    setError(null); // Clear previous errors
+                    setError(null);
                     _a.label = 1;
                 case 1:
                     _a.trys.push([1, 6, 7, 8]);
                     return [4 /*yield*/, fetch("http://localhost:4000/api/trustScore", {
-                            method: 'POST', // Assuming your /api/trustScore endpoint expects a POST request with a body
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({ url: targetUrl }), // Send the URL in the request body
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ url: targetUrl, content: content }), // Send both URL and content
                         })];
                 case 2:
                     response = _a.sent();
@@ -35064,33 +35100,52 @@ var Popup = function () {
                     throw new Error("HTTP error! Status: ".concat(response.status, " - ").concat(errorText));
                 case 4: return [4 /*yield*/, response.json()];
                 case 5:
-                    data = _a.sent();
-                    setTrustScore(data.trustScore);
-                    // Simple alert message based on score for demonstration
-                    setAlertMessage(data.trustScore >= 50 ? 'This site appears to be safe.' : 'This site might be suspicious!');
+                    data_1 = _a.sent();
+                    setTrustScore(data_1.trustScore);
+                    setAlertMessage(data_1.alertMessage);
+                    // Update cache after successful scan from popup
+                    chrome.storage.local.get('scanCache', function (result) { return __awaiter(void 0, void 0, void 0, function () {
+                        var scanCache;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    scanCache = result.scanCache || {};
+                                    scanCache[targetUrl] = {
+                                        url: targetUrl,
+                                        score: data_1.trustScore,
+                                        message: data_1.alertMessage,
+                                        timestamp: Date.now() // Update timestamp for freshness
+                                    };
+                                    return [4 /*yield*/, chrome.storage.local.set({ scanCache: scanCache })];
+                                case 1:
+                                    _a.sent();
+                                    console.log("[Popup] Updated cache for ".concat(targetUrl, " after full scan."));
+                                    return [2 /*return*/];
+                            }
+                        });
+                    }); });
                     return [3 /*break*/, 8];
                 case 6:
                     err_1 = _a.sent();
                     console.error('Error fetching trust score:', err_1);
                     setError("Failed to scan URL. Error: ".concat(err_1 instanceof Error ? err_1.message : String(err_1)));
-                    setTrustScore(null); // Reset score on error
+                    setTrustScore(0); // Default to low score on error
                     setAlertMessage('Could not determine safety. Network error or API issue.');
                     return [3 /*break*/, 8];
                 case 7:
-                    setIsLoading(false); // Always set loading to false after fetch attempt
+                    setIsLoading(false);
                     return [7 /*endfinally*/];
                 case 8: return [2 /*return*/];
             }
         });
     }); };
-    // Conditional rendering based on loading/error states
     if (isLoading) {
-        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { style: { padding: '20px', width: '300px', textAlign: 'center' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("p", { children: "Loading PhisherShield..." }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("p", { children: ["Scanning: ", url || 'current tab'] }), " "] }));
+        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { style: { padding: '20px', width: '300px', textAlign: 'center' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("p", { children: "Loading PhisherShield..." }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("p", { children: ["Scanning: ", url || 'current tab'] })] }));
     }
     if (error) {
         return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { style: { padding: '20px', width: '300px', textAlign: 'center', color: 'red' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("h2", { children: "Error" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("p", { children: error }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("p", { children: "Please ensure your backend server is running and accessible." })] }));
     }
-    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { style: { padding: '20px', width: '300px' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("h1", { children: "PhisherShield - Scan Results" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_components_TrustScoreDisplay__WEBPACK_IMPORTED_MODULE_3__["default"], { trustScore: trustScore }), " ", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_components_AlertBanner__WEBPACK_IMPORTED_MODULE_4__["default"], { message: alertMessage }), " ", url && (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_components_ReportPhishingForm__WEBPACK_IMPORTED_MODULE_5__["default"], { url: url })] }));
+    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { style: { padding: '20px', width: '300px' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("h1", { children: "PhisherShield - Scan Results" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_components_TrustScoreDisplay__WEBPACK_IMPORTED_MODULE_3__["default"], { trustScore: trustScore }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_components_AlertBanner__WEBPACK_IMPORTED_MODULE_4__["default"], { message: alertMessage }), url && (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_components_ReportPhishingForm__WEBPACK_IMPORTED_MODULE_5__["default"], { url: url })] }));
 };
 // Mount the React app to the root div in popup.html
 var rootElement = document.getElementById('popup-root');

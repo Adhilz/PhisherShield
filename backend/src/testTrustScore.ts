@@ -1,7 +1,7 @@
 import { getDomainInfo, extractWhoisMetrics } from './integrations/whois';
 import { checkUrlWithGoogleSafeBrowsing } from './integrations/googleSafeBrowsing';
 import { checkSSLValidity } from './utils/sslCheck';
-import { calculateTrustScoreWithGSBAndSSL } from './utils/trustScore';
+import { calculateTrustScoreWithGSBAndSSL } from './utils/TrustScore';
 
 (async () => {
     const domain = 'expired.badssl.com';

@@ -8,8 +8,13 @@ interface ReportPhishingFormProps {
 const ReportPhishingForm: React.FC<ReportPhishingFormProps> = ({ url }) => {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        console.log(`Reporting URL: ${url}`);
-        alert(`Thanks for reporting: ${url}! (This will be a proper form later)`);
+        const encodedUrl = encodeURIComponent(url);
+    const reportPage = `http://localhost:4000/report?url=${encodedUrl}`;
+
+    // Open the report page in a new tab
+    window.open(reportPage, '_blank');
+
+    console.log(`Redirecting to report page for URL: ${url}`);
     };
 
     return (

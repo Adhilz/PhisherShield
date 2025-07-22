@@ -1,0 +1,25 @@
+# Node.js dependencies
+node_modules/
+
+# Backend build output
+backend/dist/
+
+# Frontend extension build output
+extension/build/
+
+# React app build output
+backend/public/report_app_build/
+
+# Environment variables (contains API keys)
+backend/.env
+
+# Firebase Admin SDK private key - ABSOLUTELY CRITICAL TO IGNORE!
+backend/serviceAccountKey.json
+
+# Local development files
+.DS_Store
+.env.local
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+.vscode/ # Optional: if you don't want to share VS Code settings
