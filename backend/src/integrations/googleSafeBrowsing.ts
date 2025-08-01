@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const GOOGLE_SAFE_BROWSING_API_KEY = 'AIzaSyB_QDonfRLoRyjtBbDDCFA9NU5O069utFs';
+const GOOGLE_SAFE_BROWSING_API_KEY = 'YOUR_GOOGLE_SAFE_BROWSING_KEY';
 const GOOGLE_SAFE_BROWSING_URL = 'https://safebrowsing.googleapis.com/v4/threatMatches:find';
 
 export const checkUrlWithGoogleSafeBrowsing = async (url: string) => {

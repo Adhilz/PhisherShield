@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const WHOIS_API_URL = 'https://www.whoisxmlapi.com/whoisserver/WhoisService';
-const WHOIS_API_KEY = 'at_NuqQOnLYvpvMrB18nMXchoKOZtGSn';
+const WHOIS_API_KEY = 'WHOIS_API_KEY';
 
 export const getDomainInfo = async (domain: string) => {
     try {
