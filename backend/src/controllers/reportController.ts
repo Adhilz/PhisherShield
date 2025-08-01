@@ -1,7 +1,7 @@
 // backend/src/controllers/reportController.ts
 import { Request, Response } from 'express';
 import { reportsCollection } from '../models/Report';
-import { getTrustScore as getScanResults } from './scanController'; // Import your scan logic
+import { performScanAndCalculateScore } from './scanController'; // Import your scan logic
 import * as admin from 'firebase-admin'; // For admin.firestore.FieldValue
 
 // Extend Request type to include user property
@@ -35,7 +35,7 @@ export const verifyIdToken = async (req: Request, res: Response, next: any) => {
 // Function to create a new report
 export const createReport = async (req: Request, res: Response) => {
     const { reportedUrl, reportDetails } = req.body;
-    const user = req.user; // User info from verifyIdToken middleware
+    const user = req.user;
 
     if (!reportedUrl) {
         return res.status(400).json({ message: 'Reported URL is required.' });
@@ -46,28 +46,13 @@ export const createReport = async (req: Request, res: Response) => {
 
     let scanResults: any = {};
     try {
-        // Refactor getTrustScore in scanController.ts to return {score, deductions}
-        // instead of sending a response directly. This allows internal calls.
-        // For now, we'll call it with mock req/res, which will send a response
-        // and is not ideal for internal use, but avoids immediate refactor.
-        const mockReq = { body: { url: reportedUrl, content: '' } } as Request; // Mock request body
-        const mockRes = {
-            json: (data: any) => {
-                scanResults = {
-                    trustScore: data.trustScore,
-                    deductions: data.alertMessage // Adjust if you want actual deductions array
-                };
-                return mockRes; // Return mockRes to chain
-            },
-            status: (code: number) => mockRes // Mock status method
-        } as Response;
-
-        // Call the getTrustScore function. It will send a response, but we capture the data via mockRes.json
-        await getScanResults(mockReq, mockRes);
-
+        const scanResponse = await performScanAndCalculateScore(reportedUrl, ''); // Pass empty content for now
+        scanResults = {
+            trustScore: scanResponse.trustScore,
+            deductions: scanResponse.deductions
+        };
     } catch (scanError) {
-        console.warn(`Could not get fresh scan results for reported URL ${reportedUrl}:`, scanError);
-        // Continue without fresh scan results if it fails
+        console.warn(`Could not get fresh scan results for reported URL ${reportedUrl} during report submission:`, scanError);
     }
 
     try {
@@ -78,7 +63,7 @@ export const createReport = async (req: Request, res: Response) => {
             reporterEmail: user.email,
             status: 'pending',
             scanResults: scanResults,
-            timestamp: admin.firestore.FieldValue.serverTimestamp() // Use Firestore server timestamp
+            timestamp: admin.firestore.FieldValue.serverTimestamp()
         };
 
         const docRef = await reportsCollection.add(newReportData);
@@ -115,5 +100,26 @@ export const getAllReports = async (req: Request, res: Response) => {
     } catch (error) {
         console.error('Error fetching all reports:', error);
         res.status(500).json({ message: 'Failed to fetch all reports.', error });
+    }
+};
+
+// NEW FUNCTION: Get report count for a specific URL
+export const getReportCount = async (req: Request, res: Response) => { // <--- ADD THIS FUNCTION
+    const { url } = req.query; // Get URL from query parameter
+
+    if (!url || typeof url !== 'string') {
+        return res.status(400).json({ message: 'URL query parameter is required.' });
+    }
+
+    try {
+        // Count documents where reportedUrl matches the query URL
+        const snapshot = await reportsCollection.where('reportedUrl', '==', url).count().get();
+        const count = snapshot.data().count; // Get the count
+
+        console.log(`[Backend-Report] Found ${count} reports for URL: ${url}`);
+        res.status(200).json({ url: url, reportCount: count });
+    } catch (error) {
+        console.error(`[Backend-Report] Error getting report count for URL ${url}:`, error);
+        res.status(500).json({ message: 'Failed to get report count.', error });
     }
 };

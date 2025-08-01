@@ -2,6 +2,125 @@
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
+/***/ "./node_modules/css-loader/dist/runtime/api.js":
+/*!*****************************************************!*\
+  !*** ./node_modules/css-loader/dist/runtime/api.js ***!
+  \*****************************************************/
+/***/ ((module) => {
+
+
+
+/*
+  MIT License http://www.opensource.org/licenses/mit-license.php
+  Author Tobias Koppers @sokra
+*/
+module.exports = function (cssWithMappingToString) {
+  var list = [];
+
+  // return the list of modules as css string
+  list.toString = function toString() {
+    return this.map(function (item) {
+      var content = "";
+      var needLayer = typeof item[5] !== "undefined";
+      if (item[4]) {
+        content += "@supports (".concat(item[4], ") {");
+      }
+      if (item[2]) {
+        content += "@media ".concat(item[2], " {");
+      }
+      if (needLayer) {
+        content += "@layer".concat(item[5].length > 0 ? " ".concat(item[5]) : "", " {");
+      }
+      content += cssWithMappingToString(item);
+      if (needLayer) {
+        content += "}";
+      }
+      if (item[2]) {
+        content += "}";
+      }
+      if (item[4]) {
+        content += "}";
+      }
+      return content;
+    }).join("");
+  };
+
+  // import a list of modules into the list
+  list.i = function i(modules, media, dedupe, supports, layer) {
+    if (typeof modules === "string") {
+      modules = [[null, modules, undefined]];
+    }
+    var alreadyImportedModules = {};
+    if (dedupe) {
+      for (var k = 0; k < this.length; k++) {
+        var id = this[k][0];
+        if (id != null) {
+          alreadyImportedModules[id] = true;
+        }
+      }
+    }
+    for (var _k = 0; _k < modules.length; _k++) {
+      var item = [].concat(modules[_k]);
+      if (dedupe && alreadyImportedModules[item[0]]) {
+        continue;
+      }
+      if (typeof layer !== "undefined") {
+        if (typeof item[5] === "undefined") {
+          item[5] = layer;
+        } else {
+          item[1] = "@layer".concat(item[5].length > 0 ? " ".concat(item[5]) : "", " {").concat(item[1], "}");
+          item[5] = layer;
+        }
+      }
+      if (media) {
+        if (!item[2]) {
+          item[2] = media;
+        } else {
+          item[1] = "@media ".concat(item[2], " {").concat(item[1], "}");
+          item[2] = media;
+        }
+      }
+      if (supports) {
+        if (!item[4]) {
+          item[4] = "".concat(supports);
+        } else {
+          item[1] = "@supports (".concat(item[4], ") {").concat(item[1], "}");
+          item[4] = supports;
+        }
+      }
+      list.push(item);
+    }
+  };
+  return list;
+};
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/dist/runtime/sourceMaps.js":
+/*!************************************************************!*\
+  !*** ./node_modules/css-loader/dist/runtime/sourceMaps.js ***!
+  \************************************************************/
+/***/ ((module) => {
+
+
+
+module.exports = function (item) {
+  var content = item[1];
+  var cssMapping = item[3];
+  if (!cssMapping) {
+    return content;
+  }
+  if (typeof btoa === "function") {
+    var base64 = btoa(unescape(encodeURIComponent(JSON.stringify(cssMapping))));
+    var data = "sourceMappingURL=data:application/json;charset=utf-8;base64,".concat(base64);
+    var sourceMapping = "/*# ".concat(data, " */");
+    return [content].concat([sourceMapping]).join("\n");
+  }
+  return [content].join("\n");
+};
+
+/***/ }),
+
 /***/ "./node_modules/react-dom/cjs/react-dom.development.js":
 /*!*************************************************************!*\
   !*** ./node_modules/react-dom/cjs/react-dom.development.js ***!
@@ -34859,16 +34978,154 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
+
+// extension/src/components/TrustScoreDisplay.tsx
 
 var TrustScoreDisplay = function (_a) {
-    var trustScore = _a.trustScore;
+    var trustScore = _a.trustScore, deductions = _a.deductions, onClick = _a.onClick;
+    var _b = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(false), showDetails = _b[0], setShowDetails = _b[1]; // State to toggle deduction details
     if (trustScore === null) {
-        return (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("p", { children: "Checking trust score..." });
+        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { className: "phishershield-score-display safe", style: { cursor: 'default' }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("p", { children: "Checking trust score..." }) }));
     }
-    var isSuspicious = trustScore < 50; // Determine based on threshold
-    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { className: isSuspicious ? 'phishershield-score-display suspicious' : 'phishershield-score-display safe', children: [" ", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("p", { children: ["Trust Score: ", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("strong", { children: trustScore })] }), " "] }));
+    var isSuspicious = trustScore < 50;
+    var scoreClass = isSuspicious ? 'suspicious' : 'safe';
+    var handleClick = function () {
+        console.log('[TrustScoreDisplay] Clicked! Deductions:', deductions); // Debug log
+        if (deductions && deductions.length > 0) { // Only toggle if there are deductions to show
+            setShowDetails(!showDetails);
+        }
+        onClick === null || onClick === void 0 ? void 0 : onClick(); // Call external onClick if provided
+    };
+    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { className: "phishershield-score-display ".concat(scoreClass), onClick: handleClick, style: { cursor: (deductions && deductions.length > 0) ? 'pointer' : 'default' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("p", { children: ["Trust Score: ", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("strong", { children: trustScore })] }), deductions && deductions.length > 0 && ( // Only show arrow if deductions exist
+            (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("span", { style: { marginLeft: '10px', fontSize: '0.8em', verticalAlign: 'middle' }, children: [showDetails ? '▲' : '▼', " "] })), showDetails && deductions && deductions.length > 0 && ( // Display deductions
+            (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { style: {
+                    marginTop: '15px',
+                    paddingTop: '10px',
+                    borderTop: '1px solid #eee',
+                    textAlign: 'left',
+                    fontSize: '0.85em',
+                    color: '#666'
+                }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("p", { style: { fontWeight: 'bold', marginBottom: '5px', color: '#444' }, children: "Deductions:" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("ul", { style: { listStyleType: 'none', padding: 0, margin: 0 }, children: deductions.map(function (deduction, index) { return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("li", { style: { marginBottom: '3px' }, children: ["- ", deduction] }, index)); }) })] }))] }));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (TrustScoreDisplay);
+
+
+/***/ }),
+
+/***/ "./src/styles/popup.css":
+/*!******************************!*\
+  !*** ./src/styles/popup.css ***!
+  \******************************/
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../node_modules/css-loader/dist/runtime/sourceMaps.js */ "./node_modules/css-loader/dist/runtime/sourceMaps.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
+// Imports
+
+
+var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, `/* extension/src/styles/popup.css */
+
+/* General Popup Container */
+.phishershield-popup-container {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 20px;
+    width: 320px; /* Slightly wider for better layout */
+    min-height: 250px; /* Ensure a decent minimum size */
+    background-color: #f8faff; /* Light background */
+    border-radius: 12px; /* Rounded corners */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Soft shadow */
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Pushes content and footer apart */
+    box-sizing: border-box; /* Include padding in dimensions */
+    animation: fadeIn 0.2s ease-out forwards; /* Simple fade-in animation */
+}
+
+.phishershield-popup-container h1 {
+    font-size: 1.8em;
+    color: #2c3e50; /* Darker blue-gray for heading */
+    text-align: center;
+    margin-bottom: 20px;
+    font-weight: 700;
+}
+
+/* Loading/Error States */
+.phishershield-status-message {
+    text-align: center;
+    margin: auto; /* Centers text vertically */
+    font-size: 1.1em;
+    color: #555;
+}
+
+.phishershield-status-message.error {
+    color: #dc3545; /* Red for errors */
+    font-weight: bold;
+}
+
+/* Trust Score Display (reuses existing .phishershield-score-display) */
+/* Alert Banner (reuses existing .phishershield-alert-banner) */
+
+/* Report Form */
+.phishershield-report-form-container { /* Add this class to ReportPhishingForm's outermost div */
+    margin-top: 25px;
+    padding-top: 15px;
+    border-top: 1px solid #e0e6ed; /* Light separator */
+    text-align: center;
+}
+
+.phishershield-report-form-container p {
+    font-size: 0.9em;
+    color: #777;
+    margin-bottom: 15px;
+}
+
+.phishershield-report-form-container input[type="text"] {
+    width: calc(100% - 20px); /* Adjust for padding */
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    font-size: 0.9em;
+    background-color: #e9ecef; /* Light gray background for read-only */
+    color: #495057;
+    cursor: default; /* Indicate it's not editable */
+}
+
+.phishershield-report-form-container button {
+    background-color: #ff9800; /* Orange for Report */
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.95em;
+    font-weight: bold;
+    transition: background-color 0.2s ease-in-out;
+    width: 100%;
+}
+
+.phishershield-report-form-container button:hover {
+    background-color: #e68900;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}`, "",{"version":3,"sources":["webpack://./src/styles/popup.css"],"names":[],"mappings":"AAAA,mCAAmC;;AAEnC,4BAA4B;AAC5B;IACI,4DAA4D;IAC5D,aAAa;IACb,YAAY,EAAE,qCAAqC;IACnD,iBAAiB,EAAE,iCAAiC;IACpD,yBAAyB,EAAE,qBAAqB;IAChD,mBAAmB,EAAE,oBAAoB;IACzC,yCAAyC,EAAE,gBAAgB;IAC3D,WAAW;IACX,aAAa;IACb,sBAAsB;IACtB,8BAA8B,EAAE,oCAAoC;IACpE,sBAAsB,EAAE,kCAAkC;IAC1D,wCAAwC,EAAE,6BAA6B;AAC3E;;AAEA;IACI,gBAAgB;IAChB,cAAc,EAAE,iCAAiC;IACjD,kBAAkB;IAClB,mBAAmB;IACnB,gBAAgB;AACpB;;AAEA,yBAAyB;AACzB;IACI,kBAAkB;IAClB,YAAY,EAAE,4BAA4B;IAC1C,gBAAgB;IAChB,WAAW;AACf;;AAEA;IACI,cAAc,EAAE,mBAAmB;IACnC,iBAAiB;AACrB;;AAEA,uEAAuE;AACvE,+DAA+D;;AAE/D,gBAAgB;AAChB,uCAAuC,yDAAyD;IAC5F,gBAAgB;IAChB,iBAAiB;IACjB,6BAA6B,EAAE,oBAAoB;IACnD,kBAAkB;AACtB;;AAEA;IACI,gBAAgB;IAChB,WAAW;IACX,mBAAmB;AACvB;;AAEA;IACI,wBAAwB,EAAE,uBAAuB;IACjD,aAAa;IACb,mBAAmB;IACnB,yBAAyB;IACzB,kBAAkB;IAClB,gBAAgB;IAChB,yBAAyB,EAAE,wCAAwC;IACnE,cAAc;IACd,eAAe,EAAE,+BAA+B;AACpD;;AAEA;IACI,yBAAyB,EAAE,sBAAsB;IACjD,YAAY;IACZ,kBAAkB;IAClB,YAAY;IACZ,kBAAkB;IAClB,eAAe;IACf,iBAAiB;IACjB,iBAAiB;IACjB,6CAA6C;IAC7C,WAAW;AACf;;AAEA;IACI,yBAAyB;AAC7B;;AAEA,eAAe;AACf;IACI,OAAO,UAAU,EAAE,2BAA2B,EAAE;IAChD,KAAK,UAAU,EAAE,wBAAwB,EAAE;AAC/C","sourcesContent":["/* extension/src/styles/popup.css */\r\n\r\n/* General Popup Container */\r\n.phishershield-popup-container {\r\n    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\r\n    padding: 20px;\r\n    width: 320px; /* Slightly wider for better layout */\r\n    min-height: 250px; /* Ensure a decent minimum size */\r\n    background-color: #f8faff; /* Light background */\r\n    border-radius: 12px; /* Rounded corners */\r\n    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Soft shadow */\r\n    color: #333;\r\n    display: flex;\r\n    flex-direction: column;\r\n    justify-content: space-between; /* Pushes content and footer apart */\r\n    box-sizing: border-box; /* Include padding in dimensions */\r\n    animation: fadeIn 0.2s ease-out forwards; /* Simple fade-in animation */\r\n}\r\n\r\n.phishershield-popup-container h1 {\r\n    font-size: 1.8em;\r\n    color: #2c3e50; /* Darker blue-gray for heading */\r\n    text-align: center;\r\n    margin-bottom: 20px;\r\n    font-weight: 700;\r\n}\r\n\r\n/* Loading/Error States */\r\n.phishershield-status-message {\r\n    text-align: center;\r\n    margin: auto; /* Centers text vertically */\r\n    font-size: 1.1em;\r\n    color: #555;\r\n}\r\n\r\n.phishershield-status-message.error {\r\n    color: #dc3545; /* Red for errors */\r\n    font-weight: bold;\r\n}\r\n\r\n/* Trust Score Display (reuses existing .phishershield-score-display) */\r\n/* Alert Banner (reuses existing .phishershield-alert-banner) */\r\n\r\n/* Report Form */\r\n.phishershield-report-form-container { /* Add this class to ReportPhishingForm's outermost div */\r\n    margin-top: 25px;\r\n    padding-top: 15px;\r\n    border-top: 1px solid #e0e6ed; /* Light separator */\r\n    text-align: center;\r\n}\r\n\r\n.phishershield-report-form-container p {\r\n    font-size: 0.9em;\r\n    color: #777;\r\n    margin-bottom: 15px;\r\n}\r\n\r\n.phishershield-report-form-container input[type=\"text\"] {\r\n    width: calc(100% - 20px); /* Adjust for padding */\r\n    padding: 10px;\r\n    margin-bottom: 15px;\r\n    border: 1px solid #ced4da;\r\n    border-radius: 6px;\r\n    font-size: 0.9em;\r\n    background-color: #e9ecef; /* Light gray background for read-only */\r\n    color: #495057;\r\n    cursor: default; /* Indicate it's not editable */\r\n}\r\n\r\n.phishershield-report-form-container button {\r\n    background-color: #ff9800; /* Orange for Report */\r\n    color: white;\r\n    padding: 10px 15px;\r\n    border: none;\r\n    border-radius: 5px;\r\n    cursor: pointer;\r\n    font-size: 0.95em;\r\n    font-weight: bold;\r\n    transition: background-color 0.2s ease-in-out;\r\n    width: 100%;\r\n}\r\n\r\n.phishershield-report-form-container button:hover {\r\n    background-color: #e68900;\r\n}\r\n\r\n/* Animations */\r\n@keyframes fadeIn {\r\n    from { opacity: 0; transform: translateY(10px); }\r\n    to { opacity: 1; transform: translateY(0); }\r\n}"],"sourceRoot":""}]);
+// Exports
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___.toString());
 
 
 /***/ })
@@ -34970,6 +35227,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _components_TrustScoreDisplay__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../components/TrustScoreDisplay */ "./src/components/TrustScoreDisplay.tsx");
 /* harmony import */ var _components_AlertBanner__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../components/AlertBanner */ "./src/components/AlertBanner.tsx");
 /* harmony import */ var _components_ReportPhishingForm__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../components/ReportPhishingForm */ "./src/components/ReportPhishingForm.tsx");
+/* harmony import */ var _styles_popup_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./../styles/popup.css */ "./src/styles/popup.css");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -35010,57 +35268,77 @@ var __generator = (undefined && undefined.__generator) || function (thisArg, bod
 // extension/src/pages/Popup.tsx
 
 
-
-
-
+ // Imports TrustScoreDisplay component
+ // Imports AlertBanner component
+ // Imports ReportPhishingForm component
+ // Imports the CSS for the popup
 // Define cache duration (must match background.ts)
 var SCAN_CACHE_DURATION_MS = 5 * 60 * 1000; // Cache results for 5 minutes (5 * 60 seconds * 1000 ms)
+function injectPopupCss(cssString) {
+    var styleTag = document.createElement('style');
+    styleTag.textContent = cssString;
+    // Append to document.head for popup specific styles
+    document.head.appendChild(styleTag);
+    console.log('[Popup] Injected popup.css dynamically.');
+}
+// Call this immediately when Popup.tsx loads
+injectPopupCss(_styles_popup_css__WEBPACK_IMPORTED_MODULE_6__["default"]); // <--- CALL TO INJECT CSS
 var Popup = function () {
+    // State variables to hold scan results and UI status
     var _a = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(null), trustScore = _a[0], setTrustScore = _a[1];
     var _b = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(''), url = _b[0], setUrl = _b[1];
     var _c = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(''), alertMessage = _c[0], setAlertMessage = _c[1];
     var _d = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(true), isLoading = _d[0], setIsLoading = _d[1];
     var _e = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(null), error = _e[0], setError = _e[1];
+    var _f = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(null), geminiAiScore = _f[0], setGeminiAiScore = _f[1];
+    var _g = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(null), geminiAiReason = _g[0], setGeminiAiReason = _g[1]; // <--- NEW STATE
+    var _h = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)([]), deductions = _h[0], setDeductions = _h[1]; // State for detailed deductions
+    var _j = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(0), reportCount = _j[0], setReportCount = _j[1];
+    // useEffect hook runs once when the component mounts
     (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(function () {
         console.log('[Popup] Popup component mounted. Initiating scan or cache check.');
         // Query the active tab to get its ID and URL
         chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-            if (tabs[0] && tabs[0].id && tabs[0].url) {
+            if (tabs[0] && tabs[0].id && tabs[0].url) { // Ensure tabId and url are available
                 var activeTabId_1 = tabs[0].id;
                 var activeTabUrl_1 = tabs[0].url;
                 setUrl(activeTabUrl_1);
-                // Check cache first before fetching
+                // Check cache first before performing a full scan
                 chrome.storage.local.get('scanCache', function (result) {
                     var scanCache = result.scanCache || {};
                     var cachedEntry = scanCache[activeTabUrl_1];
+                    // If a fresh cached entry exists, use it
                     if (cachedEntry && (Date.now() - cachedEntry.timestamp < SCAN_CACHE_DURATION_MS)) {
-                        // Use cached data if fresh
                         console.log("[Popup] Using cached scan result for ".concat(activeTabUrl_1, "."));
                         setTrustScore(cachedEntry.score);
                         setAlertMessage(cachedEntry.message);
+                        setGeminiAiScore(cachedEntry.geminiAiScore);
+                        setGeminiAiReason(cachedEntry.geminiAiReason); // Set AI score from cache
+                        setDeductions(cachedEntry.deductions || []); // Set deductions from cache
                         setIsLoading(false);
                         setError(null);
                     }
                     else {
-                        // If no cache or stale cache, proceed with full scan
+                        // If no fresh cache, proceed with a full scan
                         console.log("[Popup] No fresh cache for ".concat(activeTabUrl_1, ", performing full scan."));
-                        // Request page content from content script if it's a web page
+                        // Request page content from content script if it's a web page (http/https)
                         if (activeTabUrl_1.startsWith('http://') || activeTabUrl_1.startsWith('https://')) {
+                            // Send message to the content script to extract page content
                             chrome.tabs.sendMessage(activeTabId_1, { type: 'extractPageContent' }, function (response) {
-                                // Check for runtime.lastError if content script isn't injected (e.g., on chrome:// pages, or after an error)
+                                // Check for chrome.runtime.lastError, which indicates if the message failed (e.g., content script not injected)
                                 if (chrome.runtime.lastError) {
                                     console.warn("[Popup] Could not send message to content script (e.g., on chrome:// or error pages):", chrome.runtime.lastError.message);
-                                    // Proceed without content if message fails (e.g., content script not injected)
+                                    // Proceed with scan without page content if message fails
                                     fetchAndSetScanResult(activeTabUrl_1, '');
                                 }
                                 else {
                                     var pageContent = response ? response.content : '';
-                                    fetchAndSetScanResult(activeTabUrl_1, pageContent); // Pass content to fetch
+                                    fetchAndSetScanResult(activeTabUrl_1, pageContent); // Pass extracted content to the scan function
                                 }
                             });
                         }
                         else {
-                            // For non-web pages (chrome://, about:blank, file:///), just scan the URL without content
+                            // For non-web pages (like chrome://, about:blank, file:///), scan only the URL
                             console.log("[Popup] Scanning non-web URL: ".concat(activeTabUrl_1));
                             fetchAndSetScanResult(activeTabUrl_1, '');
                         }
@@ -35068,21 +35346,26 @@ var Popup = function () {
                 });
             }
             else {
+                // Handle cases where current tab URL or ID cannot be obtained
                 setError('Could not get current tab URL or Tab ID. Please ensure you are on a valid webpage.');
                 setIsLoading(false);
             }
         });
-        // Cleanup function for useEffect (optional, but good practice for event listeners if any)
+        // Cleanup function for useEffect (logs when component unmounts)
         return function () { console.log('[Popup] Popup component unmounted.'); };
-    }, []); // Empty dependency array means this runs once on mount
-    // Renamed fetchTrustScore to fetchAndSetScanResult for clarity, it now always hits backend
+    }, []); // Empty dependency array ensures this effect runs only once on mount
+    /**
+     * Fetches scan results from the backend and updates the component's state and cache.
+     * @param targetUrl The URL to be scanned.
+     * @param content The extracted page content (optional).
+     */
     var fetchAndSetScanResult = function (targetUrl, content) { return __awaiter(void 0, void 0, void 0, function () {
         var response, errorText, data_1, err_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    setIsLoading(true);
-                    setError(null);
+                    setIsLoading(true); // Set loading state to true
+                    setError(null); // Clear any previous errors
                     _a.label = 1;
                 case 1:
                     _a.trys.push([1, 6, 7, 8]);
@@ -35101,9 +35384,14 @@ var Popup = function () {
                 case 4: return [4 /*yield*/, response.json()];
                 case 5:
                     data_1 = _a.sent();
+                    // Update component state with fetched data
                     setTrustScore(data_1.trustScore);
                     setAlertMessage(data_1.alertMessage);
-                    // Update cache after successful scan from popup
+                    setGeminiAiScore(data_1.geminiAiScore);
+                    setGeminiAiReason(data_1.geminiAiReason); // Set AI score from response
+                    setDeductions(data_1.deductions || []);
+                    setReportCount(data_1.reportCount || 0); // Set deductions from response
+                    // Update cache after a successful scan from the popup
                     chrome.storage.local.get('scanCache', function (result) { return __awaiter(void 0, void 0, void 0, function () {
                         var scanCache;
                         return __generator(this, function (_a) {
@@ -35114,6 +35402,10 @@ var Popup = function () {
                                         url: targetUrl,
                                         score: data_1.trustScore,
                                         message: data_1.alertMessage,
+                                        geminiAiScore: data_1.geminiAiScore, // Cache AI score
+                                        setGeminiAiReason: data_1.geminiAiReason,
+                                        deductions: data_1.deductions || [],
+                                        reportCount: data_1.reportCount || 0, // Cache deductions
                                         timestamp: Date.now() // Update timestamp for freshness
                                     };
                                     return [4 /*yield*/, chrome.storage.local.set({ scanCache: scanCache })];
@@ -35127,25 +35419,29 @@ var Popup = function () {
                     return [3 /*break*/, 8];
                 case 6:
                     err_1 = _a.sent();
+                    // Handle any errors during the fetch operation
                     console.error('Error fetching trust score:', err_1);
                     setError("Failed to scan URL. Error: ".concat(err_1 instanceof Error ? err_1.message : String(err_1)));
-                    setTrustScore(0); // Default to low score on error
+                    setTrustScore(0); // Default to a low score on error
                     setAlertMessage('Could not determine safety. Network error or API issue.');
                     return [3 /*break*/, 8];
                 case 7:
-                    setIsLoading(false);
+                    setIsLoading(false); // Always set loading to false after fetch attempt
                     return [7 /*endfinally*/];
                 case 8: return [2 /*return*/];
             }
         });
     }); };
+    // Conditional rendering based on loading and error states
     if (isLoading) {
-        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { style: { padding: '20px', width: '300px', textAlign: 'center' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("p", { children: "Loading PhisherShield..." }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("p", { children: ["Scanning: ", url || 'current tab'] })] }));
+        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { className: "phishershield-popup-container", children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("p", { className: "phishershield-status-message", children: "Loading PhisherShield..." }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("p", { className: "phishershield-status-message", children: ["Scanning: ", url || 'current tab'] })] }));
     }
     if (error) {
-        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { style: { padding: '20px', width: '300px', textAlign: 'center', color: 'red' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("h2", { children: "Error" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("p", { children: error }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("p", { children: "Please ensure your backend server is running and accessible." })] }));
+        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { className: "phishershield-popup-container", children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("h2", { className: "phishershield-status-message error", children: "Error" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("p", { className: "phishershield-status-message", children: error }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("p", { className: "phishershield-status-message", children: "Please ensure your backend server is running and accessible." })] }));
     }
-    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { style: { padding: '20px', width: '300px' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("h1", { children: "PhisherShield - Scan Results" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_components_TrustScoreDisplay__WEBPACK_IMPORTED_MODULE_3__["default"], { trustScore: trustScore }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_components_AlertBanner__WEBPACK_IMPORTED_MODULE_4__["default"], { message: alertMessage }), url && (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_components_ReportPhishingForm__WEBPACK_IMPORTED_MODULE_5__["default"], { url: url })] }));
+    // Main render for the popup content
+    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { className: "phishershield-popup-container", children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("h1", { children: "PhisherShield Results " }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_components_TrustScoreDisplay__WEBPACK_IMPORTED_MODULE_3__["default"], { trustScore: trustScore, deductions: deductions }), geminiAiScore !== null && ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { style: { marginTop: '10px', padding: '8px', borderRadius: '5px', backgroundColor: '#e0f2f7', border: '1px solid #00bcd4', textAlign: 'center' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("p", { style: { fontSize: '0.9em', color: '#006064' }, children: ["AI Score: ", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("strong", { children: geminiAiScore })] }), geminiAiReason && (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("p", { style: { fontSize: '0.8em', color: '#006064', marginTop: '5px' }, children: geminiAiReason })] })), reportCount > 0 && ( // <--- NEW: Display report count if > 0
+            (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { style: { marginTop: '10px', padding: '8px', borderRadius: '5px', backgroundColor: '#fffbe6', border: '1px solid #ffcc00', textAlign: 'center' }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("p", { style: { fontSize: '0.9em', color: '#856404' }, children: ["Reported by ", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("strong", { children: reportCount }), " users via PhisherShield."] }) })), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_components_AlertBanner__WEBPACK_IMPORTED_MODULE_4__["default"], { message: alertMessage }), url && (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_components_ReportPhishingForm__WEBPACK_IMPORTED_MODULE_5__["default"], { url: url })] }));
 };
 // Mount the React app to the root div in popup.html
 var rootElement = document.getElementById('popup-root');

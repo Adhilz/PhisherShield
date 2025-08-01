@@ -1,0 +1,91 @@
+/* extension/src/styles/popup.css */
+
+/* General Popup Container */
+.phishershield-popup-container {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 20px;
+    width: 320px; /* Slightly wider for better layout */
+    min-height: 250px; /* Ensure a decent minimum size */
+    background-color: #f8faff; /* Light background */
+    border-radius: 12px; /* Rounded corners */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Soft shadow */
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Pushes content and footer apart */
+    box-sizing: border-box; /* Include padding in dimensions */
+    animation: fadeIn 0.2s ease-out forwards; /* Simple fade-in animation */
+}
+
+.phishershield-popup-container h1 {
+    font-size: 1.8em;
+    color: #2c3e50; /* Darker blue-gray for heading */
+    text-align: center;
+    margin-bottom: 20px;
+    font-weight: 700;
+}
+
+/* Loading/Error States */
+.phishershield-status-message {
+    text-align: center;
+    margin: auto; /* Centers text vertically */
+    font-size: 1.1em;
+    color: #555;
+}
+
+.phishershield-status-message.error {
+    color: #dc3545; /* Red for errors */
+    font-weight: bold;
+}
+
+/* Trust Score Display (reuses existing .phishershield-score-display) */
+/* Alert Banner (reuses existing .phishershield-alert-banner) */
+
+/* Report Form */
+.phishershield-report-form-container { /* Add this class to ReportPhishingForm's outermost div */
+    margin-top: 25px;
+    padding-top: 15px;
+    border-top: 1px solid #e0e6ed; /* Light separator */
+    text-align: center;
+}
+
+.phishershield-report-form-container p {
+    font-size: 0.9em;
+    color: #777;
+    margin-bottom: 15px;
+}
+
+.phishershield-report-form-container input[type="text"] {
+    width: calc(100% - 20px); /* Adjust for padding */
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    font-size: 0.9em;
+    background-color: #e9ecef; /* Light gray background for read-only */
+    color: #495057;
+    cursor: default; /* Indicate it's not editable */
+}
+
+.phishershield-report-form-container button {
+    background-color: #ff9800; /* Orange for Report */
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.95em;
+    font-weight: bold;
+    transition: background-color 0.2s ease-in-out;
+    width: 100%;
+}
+
+.phishershield-report-form-container button:hover {
+    background-color: #e68900;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}

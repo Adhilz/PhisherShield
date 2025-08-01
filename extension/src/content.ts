@@ -53,30 +53,29 @@ function detectClientSideRedirects() {
 
 
     // 2. Monitor for JavaScript redirects after page load
-    const originalLocationSetter = Object.getOwnPropertyDescriptor(window, 'location')?.set;
+    //const originalLocationSetter = Object.getOwnPropertyDescriptor(window, 'location')?.set;
 
-    if (originalLocationSetter) {
-        Object.defineProperty(window, 'location', {
-            configurable: true,
-            enumerable: true,
-            get() { return window.location.href; },
-            set(v) {
-                const newUrl = v.toString();
-                if (newUrl && newUrl !== window.location.href && !initiatedByExtension) {
-                    console.log(`[Content Script] Detected JS redirect via setter! From: ${window.location.href} To: ${newUrl}`);
-                    chrome.runtime.sendMessage({
-                        type: 'detectedRedirect',
-                        initialUrl: window.location.href,
-                        finalUrl: newUrl,
-                        redirectType: 'js_dynamic_setter'
-                    }).catch(e => console.warn(`[Content Script] Failed to send redirect message: ${e.message}`));
-                }
-                return originalLocationSetter.call(window.location, v);
-            }
-        });
-    } else {
-        console.warn('[Content Script] Could not redefine window.location setter.');
-    }
+    //if (originalLocationSetter) {
+    //    Object.defineProperty(window, 'location', {
+    //        configurable: true,
+ //       enumerable: true,
+    //        get() { return window.location.href; },
+    //        set(v) {
+    //            const newUrl = v.toString();
+    //            if (newUrl && newUrl !== window.location.href && !initiatedByExtension) {
+    //                console.log(`[Content Script] Detected JS redirect via setter! From: ${window.location.href} To: ${newUrl}`);
+    //                chrome.runtime.sendMessage({
+    //                    initialUrl: window.location.href,
+    //                    finalUrl: newUrl,
+    //                    redirectType: 'js_dynamic_setter'
+ //               }).catch(e => console.warn(`[Content Script] Failed to send redirect message: ${e.message}`));
+    //            }
+    //            return originalLocationSetter.call(window.location, v);
+ //}
+    //    });
+   // } else {
+//   console.warn('[Content Script] Could not redefine window.location setter.');
+   // }
 
 
     // 3. Check for meta refresh tags
@@ -164,6 +163,7 @@ function displayPhishingAlertOverlay() {
         }
         document.body.style.overflow = '';
         document.documentElement.style.overflow = '';
+    
     }
 }
 

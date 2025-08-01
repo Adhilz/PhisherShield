@@ -2,12 +2,11 @@
 import { Request, Response } from 'express';
 import axios from 'axios';
 import https from 'https';
-import { promises as dns } from 'dns';
-import psl from 'psl';
+import { promises as dns } from 'dns'; // Corrected import for dns/promises
+import psl from 'psl'; // Import psl library
 
- // <--- ADDED: for promise-based DNS resolution
 // Using '../utils/TrustScore' based on common convention, but ensure your file is 'TrustScore.ts'
-import { calculateTrustScoreWithGSBAndSSL, WhoisMetrics, TrustScoreResult } from '../utils/TrustScore'; // IpReputationMetrics, DnsRecordsMetrics will be added later
+import { calculateTrustScoreWithGSBAndSSL, WhoisMetrics, TrustScoreResult, IpReputationMetrics, DnsRecordsMetrics } from '../utils/TrustScore';
 
 // --- Helper Functions for External API Calls ---
 
@@ -55,7 +54,7 @@ const fetchWhoisData = async (domain: string): Promise<WhoisMetrics> => {
     }
 };
 
-// 2. Function to check URL against Google Safe Browse API
+// 2. Function to check URL against Google Safe Browsing API
 const checkGoogleSafeBrowse = async (url: string): Promise<any> => {
     console.log(`[Backend-GSB] Checking REAL Google Safe Browse for: ${url}`);
     const GOOGLE_SAFE_Browse_API_KEY = process.env.GOOGLE_SAFE_Browse_API_KEY; 
@@ -83,17 +82,18 @@ const checkGoogleSafeBrowse = async (url: string): Promise<any> => {
         const GSB_API_ENDPOINT = `https://safebrowsing.googleapis.com/v4/threatMatches:find?key=${GOOGLE_SAFE_Browse_API_KEY}`;
         console.log(`[Backend-GSB] GSB API endpoint used: ${GSB_API_ENDPOINT}`);
 
-        const response = await axios.post(GSB_API_ENDPOINT, requestBody);
+        const response = await axios.post(GSB_API_ENDPOINT, requestBody, {
+            headers: { 'Content-Type': 'application/json' }
+        });
 
         console.log(`[Backend-GSB] GSB API Raw Response Status: ${response.status}`);
         console.log(`[Backend-GSB] GSB API Raw Response Data:`, response.data);
         return response.data;
     } catch (error: any) {
+        console.error(`[Backend-GSB] Error calling GSB API for ${url}:`, error instanceof Error ? error.message : error);
         if (axios.isAxiosError(error) && error.response) {
-            console.error(`[Backend-GSB] Axios Error for ${url}: Status ${error.response.status}, Data:`, error.response.data);
+            console.error(`[Backend-GSB] GSB API Error Status: ${error.response.status}, Data:`, error.response.data);
             console.error(`[Backend-GSB] Error URL was: ${error.config?.url}`);
-        } else {
-            console.error(`[Backend-GSB] General Error checking Google Safe Browse for ${url}:`, error);
         }
         return { matches: [] };
     }
@@ -137,10 +137,10 @@ const performSslCheck = async (url: string): Promise<boolean> => {
     });
 };
 
-// --- NEW: Helper to get domain's primary IP address (IPv4) ---
+// Helper to get domain's primary IP address (IPv4)
 const resolveDomainToIp = async (domain: string): Promise<string | null> => {
     try {
-        const addresses = await dns.resolve4(domain); // Resolve IPv4 addresses
+        const addresses = await dns.resolve4(domain);
         if (addresses.length > 0) {
             console.log(`[Backend-DNS] Resolved ${domain} to IP: ${addresses[0]}`);
             return addresses[0];
@@ -153,7 +153,7 @@ const resolveDomainToIp = async (domain: string): Promise<string | null> => {
     }
 };
 
-// --- NEW: Implement IP Reputation Check (AbuseIPDB) ---
+// Implement IP Reputation Check (AbuseIPDB)
 const checkIpReputation = async (ipAddress: string): Promise<any> => {
     console.log(`[Backend] Checking IP reputation for: ${ipAddress}`);
     const ABUSE_IPDB_API_KEY = process.env.ABUSE_IPDB_API_KEY;
@@ -176,23 +176,17 @@ const checkIpReputation = async (ipAddress: string): Promise<any> => {
             }
         });
         console.log(`[Backend-IPRep] AbuseIPDB result for ${ipAddress}:`, response.data.data);
-        return response.data.data; // Contains abuseConfidenceScore, totalReports, etc.
+        return response.data.data;
     } catch (error) {
         console.error(`[Backend-IPRep] Error checking IP reputation for ${ipAddress}:`, error instanceof Error ? error.message : error);
         if (axios.isAxiosError(error) && error.response) {
             console.error(`[Backend-IPRep] AbuseIPDB API Error Status: ${error.response.status}, Data:`, error.response.data);
         }
-        return { abuseConfidenceScore: 0, isWhitelisted: false }; // Default to safe on error
+        return { abuseConfidenceScore: 0, isWhitelisted: false };
     }
 };
 
-// --- DNS Record Verification (SPF/DMARC) - Will be added in TrustScore.ts ---
-// (Function will be moved to TrustScore.ts if needed for separate use, but logic remains similar)
-// backend/src/controllers/scanController.ts
-
-// ... (rest of the file) ...
-
-
+// Helper to get the root domain from a hostname
 const getRootDomain = (hostname: string): string => {
     const parsed = psl.parse(hostname);
     return parsed && typeof parsed === 'object' && 'domain' in parsed && parsed.domain
@@ -219,12 +213,12 @@ const verifyDnsRecords = async (domain: string): Promise<{ hasSPF: boolean; hasD
             record.some((str: string) => str.toLowerCase().startsWith('v=spf1'))
         );
         console.log(`[Backend-DNS] ${rootDomain} has SPF record: ${hasSPF}`);
-    } catch (error) {
+    } catch (error: any) {
         console.warn(`[Backend-DNS] Outer catch for SPF for ${rootDomain}:`, error);
     }
 
     try {
-        const dmarcDomain = `_dmarc.${rootDomain}`;
+        let dmarcDomain = `_dmarc.${rootDomain}`;
         console.log(`[Backend-DNS] Attempting to resolve TXT for DMARC for domain: ${dmarcDomain}`);
         const dmarcTxtRecords = await dns.resolveTxt(dmarcDomain).catch((error) => {
             console.error(`[Backend-DNS] Error resolving DMARC TXT for ${dmarcDomain}:`, error);
@@ -235,26 +229,118 @@ const verifyDnsRecords = async (domain: string): Promise<{ hasSPF: boolean; hasD
             record.some((str: string) => str.toLowerCase().startsWith('v=dmarc1'))
         );
         console.log(`[Backend-DNS] ${rootDomain} has DMARC record: ${hasDMARC}`);
-    } catch (error) {
+    } catch (error: any) {
         console.warn(`[Backend-DNS] Outer catch for DMARC for ${rootDomain}:`, error);
     }
 
     return { hasSPF, hasDMARC };
 };
 
+// --- NEW: Function to get AI-generated score from Gemini API ---
+const getGeminiAiScore = async (url: string, pageContent: string): Promise<{ score: number; reason: string } | null> => {
+    console.log(`[Backend-Gemini] Requesting AI score for: ${url}`);
+    const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
-// ... (rest of scanController.ts) ...
-
-// --- Main controller function to handle the /api/trustScore POST request ---
-export const getTrustScore = async (req: Request, res: Response) => {
-    const { url, content } = req.body;
-
-    if (!url) {
-        console.error('[Backend-Controller] Error: URL is missing in request body.');
-        return res.status(400).json({ message: 'URL is required in the request body.' });
+    if (!GEMINI_API_KEY) {
+        console.error("[Backend-Gemini] GEMINI_API_KEY is not set. Skipping Gemini AI score.");
+        return null;
     }
 
-    console.log(`[Backend-Controller] Received POST request to scan URL: ${url}`);
+    let prompt = `Analyze the following URL and its content for signs of phishing, scam, or malicious intent. Provide a single numerical score from 0 (highly suspicious) to 100 (completely safe). Explain your reasoning in one sentence.
+    URL: ${url}
+    Content (if available): ${pageContent ? pageContent.substring(0, 2000) + '...' : 'No content provided.'}
+
+    Respond in JSON format: {"score": <number>, "reason": "<string>"}`;
+
+    let chatHistory = [];
+    chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+
+    try {
+        const payload = {
+            contents: chatHistory,
+            generationConfig: {
+                responseMimeType: "application/json",
+                responseSchema: {
+                    type: "OBJECT",
+                    properties: {
+                        "score": { "type": "NUMBER" },
+                        "reason": { "type": "STRING" }
+                    },
+                    required: ["score", "reason"]
+                }
+            }
+        };
+
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
+        console.log(`[Backend-Gemini] Sending request to Gemini API: ${apiUrl}`);
+
+        const response = await axios.post(apiUrl, payload, {
+            headers: { 'Content-Type': 'application/json' },
+            timeout: 15000 // Set a timeout for the request
+        });
+
+        const result = response.data;
+        console.log(`[Backend-Gemini] Raw API Response:`, JSON.stringify(result, null, 2));
+        if (result.candidates && result.candidates.length > 0 &&
+            result.candidates[0].content && result.candidates[0].content.parts &&
+            result.candidates[0].content.parts.length > 0) {
+            const jsonString = result.candidates[0].content.parts[0].text;
+            console.log(`[Backend-Gemini] Raw JSON String from AI:`, jsonString);
+            try {
+                const parsedJson = JSON.parse(jsonString);
+                if (typeof parsedJson.score === 'number' && typeof parsedJson.reason === 'string') {
+                    console.log(`[Backend-Gemini] Successfully parsed AI response.`);
+                    return {
+                        score: Math.max(0, Math.min(100, parsedJson.score)),
+                        reason: parsedJson.reason
+                    };
+                } else {
+                    console.warn("[Backend-Gemini] Parsed AI response missing 'score' or 'reason' or has wrong types.", parsedJson);
+                    return null;
+                }
+            } catch (jsonParseError) {
+                console.error("[Backend-Gemini] Failed to parse JSON from AI response:", jsonParseError);
+                console.error("[Backend-Gemini] Problematic JSON string:", jsonString);
+                return null;
+            }
+        } else {
+            console.warn("[Backend-Gemini] Gemini API response structure unexpected or no candidates.");
+            return null;
+        }
+    } catch (error: any) {
+        console.error(`[Backend-Gemini] Error calling Gemini API for ${url}:`, error instanceof Error ? error.message : error);
+        if (axios.isAxiosError(error) && error.response) {
+            console.error(`[Backend-Gemini] Gemini API Error Status: ${error.response.status}, Data:`, JSON.stringify(error.response.data, null, 2));
+        } else if (error.code === 'ECONNABORTED') {
+            console.error("[Backend-Gemini] Gemini API call timed out.");
+        }
+        return null;
+    }
+};
+const fetchReportCount = async (url: string): Promise<number> => {
+    console.log(`[Backend] Fetching report count for: ${url}`);
+    try {
+        // Call your own backend API endpoint for report count
+        // THIS IS THE LINE THAT'S GETTING THE 401
+        const response = await axios.get(`http://localhost:4000/api/report/count?url=${encodeURIComponent(url)}`);
+        console.log(`[Backend-ReportCount] Report count for ${url}: ${response.data.reportCount}`);
+        return response.data.reportCount;
+    } catch (error) {
+        console.error(`[Backend-ReportCount] Error fetching report count for ${url}:`, error instanceof Error ? error.message : error);
+        return 0; // Default to 0 reports on error
+    }
+};
+
+/**
+ * Core function to perform a scan and calculate the trust score.
+ * This function now RETURNS the result, instead of sending an Express response.
+ */
+export const performScanAndCalculateScore = async (
+    url: string,
+    content: string = '',
+    redirectType: string | null = null
+): Promise<{ trustScore: number; alertMessage: string; deductions: string[]; geminiAiScore: number | null; geminiAiReason: string | null; reportCount: number }> => {
+    console.log(`[Backend-Controller] Performing scan for URL: ${url}`);
 
     try {
         let domain: string;
@@ -262,22 +348,18 @@ export const getTrustScore = async (req: Request, res: Response) => {
             domain = new URL(url).hostname;
         } catch (e) {
             console.error(`[Backend-Controller] Invalid URL provided: ${url}`, e);
-            return res.status(400).json({ trustScore: 0, alertMessage: "Invalid URL format provided." });
+            return { trustScore: 0, alertMessage: "Invalid URL format provided.", deductions: ['Malformed URL'], geminiAiScore: null, geminiAiReason: null, reportCount: 0 };
         }
         console.log(`[Backend-Controller] Extracted domain: ${domain}`);
 
-        // TEMPORARY: FORCED LOW SCORE FOR TESTING OVERLAY (Keep as is)
+        // TEMPORARY: FORCED LOW SCORE FOR TESTING OVERLAY
         if (domain === 'example.com') {
             console.log(`[Backend-Controller] FORCING LOW SCORE for ${domain} to test alert overlay.`);
-            return res.json({
-                trustScore: 10,
-                alertMessage: 'WARNING: Forced suspicious score for testing overlay on reachable site! 🚨'
-            });
+            return { trustScore: 10, alertMessage: 'WARNING: Forced suspicious score for testing overlay on reachable site! 🚨', deductions: ['Forced low score'], geminiAiScore: null, geminiAiReason: null, reportCount: 0 };
         }
         // END TEMPORARY FORCED LOW SCORE
 
 
-        // 2. Fetch data from external sources
         const whoisData = await fetchWhoisData(domain);
         console.log(`[Backend-Controller] WHOIS data fetched:`, whoisData);
 
@@ -287,32 +369,37 @@ export const getTrustScore = async (req: Request, res: Response) => {
         const sslValid = await performSslCheck(url);
         console.log(`[Backend-Controller] SSL valid: ${sslValid}`);
 
-        // NEW: Resolve IP and perform IP reputation check
         const ipAddress = await resolveDomainToIp(domain);
-        let ipReputation = { abuseConfidenceScore: 0, isWhitelisted: false }; // Default safe
+        let ipReputation: IpReputationMetrics = { abuseConfidenceScore: 0, isWhitelisted: false };
         if (ipAddress) {
             ipReputation = await checkIpReputation(ipAddress);
         }
         console.log(`[Backend-Controller] IP Rep:`, ipReputation);
 
-        // NEW: Verify DNS records
         const dnsRecords = await verifyDnsRecords(domain);
         console.log(`[Backend-Controller] DNS Records:`, dnsRecords);
 
+        const geminiAiResult = await getGeminiAiScore(url, content);
+        const geminiAiScore = geminiAiResult ? geminiAiResult.score : null;
+        const geminiAiReason = geminiAiResult ? geminiAiResult.reason : null;
+        console.log(`[Backend-Controller] Gemini AI Score: ${geminiAiScore}, Reason: ${geminiAiReason}`);
 
-        // 3. Calculate trust score using your utility function, passing new data
+        const reportCount = await fetchReportCount(url); // Fetch report count
+
         const { score, deductions }: TrustScoreResult = calculateTrustScoreWithGSBAndSSL(
             whoisData,
             gsbResult,
             sslValid,
             content,
-            url, // originalUrl for URL pattern analysis
-            ipReputation, // <--- NEW PARAMETER
-            dnsRecords // <--- NEW PARAMETER
+            url, // originalUrl
+            ipReputation,
+            dnsRecords,
+            redirectType,
+            geminiAiScore,
+            reportCount // This parameter is correctly passed here
         );
         console.log(`[Backend-Controller] Calculated Score: ${score}, Deductions:`, deductions);
 
-        // 4. Construct an alert message based on the calculated score and deductions
         let alertMessage: string;
         if (score >= 80) {
             alertMessage = 'This site appears highly trustworthy. ✅';
@@ -323,14 +410,39 @@ export const getTrustScore = async (req: Request, res: Response) => {
         }
         console.log(`[Backend-Controller] Final Alert Message: ${alertMessage}`);
 
-        // 5. Send the response back to the frontend (extension popup)
-        res.json({ trustScore: score, alertMessage });
-
+        return { trustScore: score, alertMessage, deductions, geminiAiScore, geminiAiReason, reportCount };
     } catch (error) {
-        console.error(`[Backend-Controller] Unexpected error processing scan for ${url}:`, error);
+        console.error(`[Backend-Controller] Unexpected error during scan for ${url}:`, error);
+        return { trustScore: 0, alertMessage: `Error scanning site: ${error instanceof Error ? error.message : String(error)}.`, deductions: ['Internal error'], geminiAiScore: null, geminiAiReason: null, reportCount: 0 };
+    }
+};
+
+/**
+ * Express controller function to handle the /api/trustScore POST request.
+ * This calls performScanAndCalculateScore and sends the HTTP response.
+ */
+export const scanUrlAndRespond = async (req: Request, res: Response) => {
+    const { url, content, redirectType } = req.body;
+
+    if (!url) {
+        return res.status(400).json({ message: 'URL is required in the request body.' });
+    }
+
+    try {
+        const scanResult = await performScanAndCalculateScore(url, content, redirectType);
+        res.json({
+            trustScore: scanResult.trustScore,
+            alertMessage: scanResult.alertMessage,
+            deductions: scanResult.deductions,
+            geminiAiScore: scanResult.geminiAiScore,
+            geminiAiReason: scanResult.geminiAiReason,
+            reportCount: scanResult.reportCount
+        });
+    } catch (error) {
+        console.error(`[Backend-Controller] Error in scanUrlAndRespond for ${url}:`, error);
         res.status(500).json({
             trustScore: 0,
-            alertMessage: `Error scanning site: ${error instanceof Error ? error.message : String(error)}. Please check backend logs.`,
+            alertMessage: `Error processing scan.`,
             error: error instanceof Error ? error.message : String(error)
         });
     }

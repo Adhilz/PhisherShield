@@ -5,35 +5,34 @@ import React, { useEffect, useState } from 'react';
 // No need for ReactDOMClient.createRoot here, as it's done in content.ts
 import AlertBanner from '../components/AlertBanner';
 import TrustScoreDisplay from '../components/TrustScoreDisplay';
-
 interface AlertData {
     url: string;
     score: number;
     message: string;
-    tabId: number; // This will be needed to send messages back to background
+    tabId: number;
+    geminiAiScore?: number | null;
+     geminiAiReason?: string | null;
+    deductions?: string[];
+    reportCount?: number; // <--- ADD THIS LINE
 }
 
 const AlertPage: React.FC = () => {
     const [alertData, setAlertData] = useState<AlertData | null>(null);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        // Retrieve stored data from background script when component mounts
+     useEffect(() => {
         chrome.storage.local.get('phisherShieldAlertData', (data) => {
             if (data.phisherShieldAlertData) {
                 setAlertData(data.phisherShieldAlertData);
                 setLoading(false);
                 console.log("[AlertPage] Successfully retrieved data for overlay:", data.phisherShieldAlertData);
-
-                // We are keeping the remove commented out for now for debugging
-                // (chrome.storage.local.remove('phisherShieldAlertData');)
             } else {
                 console.error("[AlertPage] NO DATA FOUND IN STORAGE for overlay!");
                 setLoading(false);
                 setAlertData({ url: 'unknown', score: 0, message: 'Error: Could not retrieve site information for alert overlay.', tabId: -1 });
             }
         });
-    }, []); // Runs once when component mounts
+    }, []);// Runs once when component mounts
 
     // Helper function to send user actions back to the background script
     const sendUserAction = (action: 'continue' | 'report' | 'block') => {
@@ -63,7 +62,7 @@ const AlertPage: React.FC = () => {
         sendUserAction('block');
         // Content script will handle removing the overlay
     };
-
+    
     if (loading) {
         return (
             <div style={{ padding: '20px', textAlign: 'center', fontFamily: 'sans-serif', color: 'white' }}>
@@ -82,7 +81,7 @@ const AlertPage: React.FC = () => {
         );
     }
 
-    const { url, score, message } = alertData;
+   const { url, score, message, geminiAiScore, deductions,geminiAiReason,reportCount } = alertData; // <--- NEW: Destructure geminiAiScore
     const isSuspicious = score < 50;
 
     return (
@@ -93,8 +92,22 @@ const AlertPage: React.FC = () => {
             <p style={{ fontSize: '0.95em', color: '#555', marginBottom: '10px' }}>
                 <strong>URL:</strong> <a href={url} target="_blank" rel="noopener noreferrer" style={{ color: '#007bff', wordBreak: 'break-all' }}>{url}</a>
             </p>
-            {/* TrustScoreDisplay and AlertBanner components are rendered here */}
-            <TrustScoreDisplay trustScore={score} />
+            {/* Pass deductions to TrustScoreDisplay */}
+            <TrustScoreDisplay trustScore={score} deductions={deductions} />
+
+            {geminiAiScore !== null && ( // <--- NEW: Display AI score if available
+                <div style={{ marginTop: '10px', padding: '8px', borderRadius: '5px', backgroundColor: '#e0f2f7', border: '1px solid #00bcd4', textAlign: 'center' }}>
+                    <p style={{ fontSize: '0.9em', color: '#006064' }}>AI Score: <strong>{geminiAiScore}</strong></p>
+                    {geminiAiReason && <p style={{ fontSize: '0.8em', color: '#006064', marginTop: '5px' }}>{geminiAiReason}</p>}
+                </div>
+            )}
+            {reportCount !== undefined && reportCount > 0 && ( // <--- NEW: Display report count if > 0
+                <div style={{ marginTop: '10px', padding: '8px', borderRadius: '5px', backgroundColor: '#fffbe6', border: '1px solid #ffcc00', textAlign: 'center' }}>
+                    <p style={{ fontSize: '0.9em', color: '#856404' }}>
+                        Reported by <strong>{reportCount}</strong> users via PhisherShield.
+                    </p>
+                </div>
+            )}
             <AlertBanner message={message} />
 
             <div className="phishershield-buttons-container">

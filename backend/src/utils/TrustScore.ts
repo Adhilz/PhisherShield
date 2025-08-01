@@ -8,7 +8,7 @@ export type WhoisMetrics = {
     estimatedDomainAge?: number;
 };
 
-// NEW: Define types for IP Reputation to match what the controller sends
+// Define types for IP Reputation to match what the controller sends
 export interface IpReputationMetrics {
     abuseConfidenceScore: number;
     isWhitelisted: boolean;
@@ -20,7 +20,7 @@ export interface IpReputationMetrics {
     // lastReportedAt?: string;
 }
 
-// NEW: Define types for DNS Records to match what the controller sends
+// Define types for DNS Records to match what the controller sends
 export interface DnsRecordsMetrics {
     hasSPF: boolean;
     hasDMARC: boolean;
@@ -77,10 +77,10 @@ export const calculateTrustScoreWithGSB = (
         deductions.push("Registrar contains 'privacy' (-10)");
     }
 
-    // Google Safe Browse deduction
+    // Google Safe Browsing deduction
     if (gsbResult && gsbResult.matches && gsbResult.matches.length > 0) {
         score -= 50;
-        deductions.push('Flagged by Google Safe Browse (-50)');
+        deductions.push('Flagged by Google Safe Browsing (-50)');
     }
 
     score = Math.max(0, Math.min(100, score));
@@ -93,8 +93,11 @@ export const calculateTrustScoreWithGSBAndSSL = (
     sslValid: boolean,
     pageContent: string = '',
     originalUrl: string,
-    ipReputation: IpReputationMetrics, // <--- NEW PARAMETER
-    dnsRecords: DnsRecordsMetrics // <--- NEW PARAMETER
+    ipReputation: IpReputationMetrics,
+    dnsRecords: DnsRecordsMetrics,
+    redirectType: string | null = null,
+    geminiAiScore: number | null = null,
+    reportCount: number = 0 // <--- CRITICAL FIX: Corrected typo and ensured comma
 ): TrustScoreResult => {
     let score = 100;
     const deductions: string[] = [];
@@ -112,10 +115,10 @@ export const calculateTrustScoreWithGSBAndSSL = (
         deductions.push("Registrar contains 'privacy' (-10)");
     }
 
-    // Google Safe Browse deduction
+    // Google Safe Browsing deduction
     if (gsbResult && gsbResult.matches && gsbResult.matches.length > 0) {
         score -= 50;
-        deductions.push('Flagged by Google Safe Browse (-50)');
+        deductions.push('Flagged by Google Safe Browsing (-50)');
     }
 
     // SSL deduction
@@ -213,20 +216,16 @@ export const calculateTrustScoreWithGSBAndSSL = (
     // --- END URL Pattern Analysis ---
 
 
-    // --- NEW: IP Reputation Deduction ---
-    // Ensure ipReputation is defined and has a non-zero abuseConfidenceScore
+    // --- IP Reputation Deduction ---
     if (ipReputation && ipReputation.abuseConfidenceScore && ipReputation.abuseConfidenceScore > 0) {
         const deductionAmount = Math.min(Math.floor(ipReputation.abuseConfidenceScore / 5), 40); // Max 40 deduction
         score -= deductionAmount;
         deductions.push(`IP flagged with abuse score ${ipReputation.abuseConfidenceScore} (-${deductionAmount})`);
     }
-    // isWhitelisted from AbuseIPDB means it's generally safe, so no deduction.
 
-    // --- NEW: DNS Record Deduction ---
-    // Only apply for HTTPS domains, as SPF/DMARC are primarily for email authenticity linked to domain,
-    // and missing them on HTTP sites is less relevant than missing HTTPS.
+    // --- DNS Record Deduction ---
     if (originalUrl.startsWith('https://')) {
-        if (dnsRecords) { // Ensure dnsRecords object is available
+        if (dnsRecords) {
             if (!dnsRecords.hasSPF) {
                 score -= 10;
                 deductions.push('Missing SPF record (-10)');
@@ -238,9 +237,44 @@ export const calculateTrustScoreWithGSBAndSSL = (
         } else {
             console.warn(`[TrustScore] DNS records data not available for ${originalUrl}, skipping DNS record deductions.`);
         }
-        // Add checks for DKIM if implemented
     }
 
+    // --- NEW: Redirect Deduction ---
+    const REDIRECT_DEDUCTION_AMOUNT = 15; // Points to deduct for a suspicious redirect
+    if (redirectType && redirectType !== 'None') { // Check if a redirect was detected
+        score -= REDIRECT_DEDUCTION_AMOUNT;
+        deductions.push(`Client-side redirect detected (${redirectType}) (-${REDIRECT_DEDUCTION_AMOUNT})`);
+    }
+
+    // --- NEW: Gemini AI Score Deduction ---
+    if (geminiAiScore !== null) {
+        // If AI score is very low, apply a significant deduction
+        if (geminiAiScore < 30) { // e.g., AI thinks it's very bad
+            score -= 40;
+            deductions.push(`AI assessment: Very suspicious (${geminiAiScore}) (-40)`);
+        } else if (geminiAiScore < 60) { // AI thinks it's somewhat suspicious
+            score -= 20;
+            deductions.push(`AI assessment: Suspicious (${geminiAiScore}) (-20)`);
+        } else if (geminiAiScore > 90) { // AI thinks it's very safe (can add a small bonus or no deduction)
+            // No deduction, or even a small bonus if you want
+            // score += 5; deductions.push('AI assessment: Highly safe (+5)');
+        }
+    } else {
+        // If AI score could not be obtained, maybe a small penalty or just ignore
+        // score -= 5; deductions.push('AI assessment: Unavailable (-5)');
+    }
+
+    // --- NEW: Deduction based on Report Count ---
+    const REPORT_COUNT_THRESHOLD = 100; // Define your threshold
+    const REPORT_COUNT_DEDUCTION = 30; // Points to deduct if threshold is met
+
+    if (reportCount >= REPORT_COUNT_THRESHOLD) {
+        score -= REPORT_COUNT_DEDUCTION;
+        deductions.push(`Reported by ${reportCount} users (-${REPORT_COUNT_DEDUCTION})`);
+    } else if (reportCount > 0) { // Small deduction for some reports, even if below threshold
+        score -= 5;
+        deductions.push(`Reported by ${reportCount} users (-5)`);
+    }
 
     score = Math.max(0, Math.min(100, score)); // Ensure score is between 0 and 100
     return { score, deductions };

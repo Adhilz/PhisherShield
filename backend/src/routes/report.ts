@@ -1,9 +1,9 @@
 // backend/src/routes/report.ts
 import { Router } from 'express';
-import { createReport, getUserReports, getAllReports, verifyIdToken } from '../controllers/reportController';
+import { createReport, getUserReports, getAllReports, verifyIdToken, getReportCount } from '../controllers/reportController';
 
 const router = Router();
-
+router.get('/count', getReportCount); 
 // Protect routes that require authentication
 router.use(verifyIdToken); // All routes below this will require a valid ID token
 

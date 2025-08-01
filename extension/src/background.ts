@@ -1,34 +1,40 @@
 // extension/src/background.ts
-console.log('PhisherShield background service worker started (Corrected Message Listeners).');
+console.log('PhisherShield background service worker started (Final Fix for AI Cache & WebRequest).');
 
-// Define a flag to indicate if we are navigating after a 'continue' action
 const bypassingTabs = new Set<number>();
-
-// Define cache duration (e.g., 5 minutes)
-const SCAN_CACHE_DURATION_MS = 5 * 60 * 1000; // Cache results for 5 minutes (5 * 60 seconds * 1000 ms)
+const SCAN_CACHE_DURATION_MS = 5 * 60 * 1000; // Cache results for 5 minutes
 
 // Helper function to fetch trust score from your backend
-async function fetchTrustScoreFromBackend(url: string): Promise<{ trustScore: number; alertMessage: string; }> {
+async function fetchTrustScoreFromBackend(
+    url: string,
+    redirectType: string | null = null // Accepts redirectType
+): Promise<{ trustScore: number; alertMessage: string; geminiAiScore: number | null; geminiAiReason: string | null }> {
     try {
-        console.log(`[Background] Attempting to fetch trust score for: ${url}`);
-        const response = await fetch(`http://localhost:4000/api/trustScore`, { // Ensure this URL matches your backend
+        console.log(`[Background] Attempting to fetch trust score for: ${url} (Redirect: ${redirectType || 'None'})`);
+        const response = await fetch(`http://localhost:4000/api/trustScore`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ url, content: '' }), // Send empty content for pre-load scan
+            // Pass redirectType to backend
+            body: JSON.stringify({ url, content: '', redirectType: redirectType }),
         });
 
         if (!response.ok) {
             const errorText = await response.text();
             console.error(`[Background] Backend HTTP error for ${url}: Status ${response.status}, Message: ${errorText}`);
-            return { trustScore: 0, alertMessage: `Failed to scan site: Server error.` };
+            return { trustScore: 0, alertMessage: `Failed to scan site: Server error.`, geminiAiScore: null, geminiAiReason: null };
         }
 
         const data = await response.json();
         console.log(`[Background] Successfully fetched score for ${url}:`, data);
-        return { trustScore: data.trustScore, alertMessage: data.alertMessage };
+        return {
+            trustScore: data.trustScore,
+            alertMessage: data.alertMessage,
+            geminiAiScore: data.geminiAiScore,
+            geminiAiReason: data.geminiAiReason
+        };
     } catch (error) {
         console.error(`[Background] Network error fetching trust score for ${url}:`, error);
-        return { trustScore: 0, alertMessage: `Failed to scan site: Network error.` };
+        return { trustScore: 0, alertMessage: `Failed to scan site: Network error.`, geminiAiScore: null, geminiAiReason: null };
     }
 }
 
@@ -47,8 +53,8 @@ async function retrySendMessage(tabId: number, message: any, retries: number = 3
     } catch (error: any) {
         if (error.message && error.message.includes('Receiving end does not exist') && retries > 0) {
             console.warn(`[Background] Retrying message to tab ${tabId} (Type: ${message.type})... Retries left: ${retries - 1}`);
-            await new Promise(resolve => setTimeout(resolve, delayMs)); // Wait before retrying
-            await retrySendMessage(tabId, message, retries - 1, delayMs * 1.5); // Exponential backoff
+            await new Promise(resolve => setTimeout(resolve, delayMs));
+            await retrySendMessage(tabId, message, retries - 1, delayMs * 1.5);
         } else {
             console.error(`[Background] Failed to send message to tab ${tabId} (Type: ${message.type}):`, error);
         }
@@ -74,40 +80,62 @@ chrome.webRequest.onBeforeRequest.addListener(
 
             (async () => {
                 let cachedEntry = null;
-                const result = await chrome.storage.local.get('scanCache');
+                const result = await chrome.storage.local.get(['scanCache', 'detectedRedirects']);
                 const scanCache = result.scanCache || {};
+                const detectedRedirects = result.detectedRedirects || {};
+
                 cachedEntry = scanCache[targetUrl];
+                const tabRedirectInfo = detectedRedirects[details.tabId] || null;
 
                 let trustScore: number;
                 let alertMessage: string;
+                let geminiAiScore: number | null;
+                let geminiAiReason: string | null;
 
                 if (cachedEntry && (Date.now() - cachedEntry.timestamp < SCAN_CACHE_DURATION_MS)) {
                     console.log(`[Background-WebReq] Using cached scan result for ${targetUrl} (pre-load).`);
                     trustScore = cachedEntry.score;
                     alertMessage = cachedEntry.message;
+                    geminiAiScore = cachedEntry.geminiAiScore;
+                    geminiAiReason = cachedEntry.geminiAiReason;
                 } else {
-                    const fetchedResult = await fetchTrustScoreFromBackend(targetUrl);
+                    // Pass redirectType if available for this tab
+                    const fetchedResult = await fetchTrustScoreFromBackend(targetUrl, tabRedirectInfo?.redirectType);
                     trustScore = fetchedResult.trustScore;
                     alertMessage = fetchedResult.alertMessage;
+                    geminiAiScore = fetchedResult.geminiAiScore;
+                    geminiAiReason = fetchedResult.geminiAiReason;
 
                     const cacheEntry = {
                         url: targetUrl,
                         score: trustScore,
                         message: alertMessage,
                         tabId: details.tabId,
-                        timestamp: Date.now()
+                        timestamp: Date.now(),
+                        geminiAiScore: geminiAiScore,
+                        geminiAiReason: geminiAiReason
                     };
                     scanCache[targetUrl] = cacheEntry;
                     await chrome.storage.local.set({ scanCache: scanCache });
                     console.log(`[Background-WebReq] Cached new scan result for ${targetUrl}.`);
                 }
 
+                // Clear redirect info for this tab after it's used in the scan
+                if (tabRedirectInfo) {
+                    delete detectedRedirects[details.tabId];
+                    await chrome.storage.local.set({ detectedRedirects: detectedRedirects });
+                    console.log(`[Background-WebReq] Cleared redirect info for tab ${details.tabId}.`);
+                }
+
+
                 await chrome.storage.local.set({
                     phisherShieldAlertData: {
                         url: targetUrl,
                         score: trustScore,
                         message: alertMessage,
-                        tabId: details.tabId
+                        tabId: details.tabId,
+                        geminiAiScore: geminiAiScore,
+                        geminiAiReason: geminiAiReason
                     }
                 });
                 console.log(`[Background-WebReq] Stored alert data for overlay: ${targetUrl}.`);
@@ -138,8 +166,7 @@ chrome.webNavigation.onCommitted.addListener(details => {
 }, { url: [{ urlMatches: "http://*/*" }, { urlMatches: "https://*/*" }] });
 
 
-// --- CRITICAL FIX: Ensure only ONE chrome.runtime.onMessage.addListener ---
-// This listener handles all message types coming from the content script or popup.
+// Listener for messages coming FROM content script (user actions or detected redirects)
 chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     if (message.type === "userAction") {
         const { action, originalUrl, tabId } = message;
@@ -162,15 +189,37 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
         }
     } else if (message.type === "pageContent") {
         console.log(`[Background] Received page content from content script (Tab: ${sender.tab?.id}, URL: ${message.url})`);
-    } else if (message.type === "detectedRedirect") { // <--- NEW MESSAGE TYPE: Handle detected redirects here
+    } else if (message.type === "detectedRedirect") {
         const { initialUrl, finalUrl, redirectType } = message;
-        console.log(`[Background] Detected ${redirectType} redirect from ${initialUrl} to ${finalUrl}.`);
-        // Here, you would typically send this to your backend if you want to apply a deduction
-        // or trigger a notification based on this redirect.
-        // Example of sending to backend for analysis (you'd need to adapt fetchTrustScoreFromBackend):
-        // const { trustScore, alertMessage } = await fetchTrustScoreFromBackend(finalUrl, { redirectDetected: true, redirectType });
-        // You could then trigger a notification or a follow-up action.
+        const tabId = sender.tab?.id;
+
+        if (tabId) {
+            console.log(`[Background] Detected ${redirectType} redirect from ${initialUrl} to ${finalUrl} in tab ${tabId}.`);
+            chrome.storage.local.get('detectedRedirects', async (result) => {
+                const detectedRedirects = result.detectedRedirects || {};
+                detectedRedirects[tabId] = {
+                    initialUrl: initialUrl,
+                    finalUrl: finalUrl,
+                    redirectType: redirectType,
+                    timestamp: Date.now()
+                };
+                await chrome.storage.local.set({ detectedRedirects: detectedRedirects });
+                console.log(`[Background] Stored redirect info for tab ${tabId}.`);
+
+                // OPTIONAL: Trigger a re-scan immediately if the redirect itself is highly suspicious
+                // (async () => {
+                //     const { trustScore, alertMessage } = await fetchTrustScoreFromBackend(finalUrl, redirectType);
+                //     if (trustScore < 50) {
+                //         console.log(`[Background] Re-scan after redirect: ${finalUrl} is suspicious (${trustScore}).`);
+                //         await retrySendMessage(tabId, { type: 'displayPhishingAlert' });
+                //     } else {
+                //         console.log(`[Background] Re-scan after redirect: ${finalUrl} is safe (${trustScore}).`);
+                //         await retrySendMessage(tabId, { type: 'removePhishingAlert' }, 1);
+                //     }
+                // })();
+            });
+        } else {
+            console.warn("[Background] Received detectedRedirect message without a valid tabId.");
+        }
     }
-    // Return nothing at the end of the listener.
-    // Chrome will implicitly understand it as a synchronous completion, or that sendResponse is not called.
 });

@@ -1,4 +1,4 @@
-// backend/src/app.ts
+
 import express from 'express';
 import scanRoute from './routes/scan';
 import reportRoute from './routes/report'; // <--- NEW: Import report route
@@ -11,10 +11,11 @@ import './firebaseAdmin'; // <--- NEW: Initialize Firebase Admin SDK
 
 // Log environment variables (keep for debugging)
 console.log('Environment Variables Loaded:');
+
 console.log('GOOGLE_SAFE_Browse_API_KEY:', process.env.GOOGLE_SAFE_Browse_API_KEY ? 'Loaded' : 'NOT LOADED');
 console.log('WHOIS_XML_API_KEY:', process.env.WHOIS_XML_API_KEY ? 'Loaded' : 'NOT LOADED');
 console.log('ABUSE_IPDB_API_KEY:', process.env.ABUSE_IPDB_API_KEY ? 'Loaded' : 'NOT LOADED'); // <--- NEW LOG
-
+console.log('GEMINI_API_KEY:', process.env.GEMINI_API_KEY ? 'Loaded' : 'NOT LOADED');
 const app = express();
 app.use(express.json()); // Enable Express to parse JSON request bodies
 app.use(express.urlencoded({ extended: true })); // For URL-encoded bodies
