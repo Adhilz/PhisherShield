@@ -34967,10 +34967,10 @@ var ReportPhishingForm = function (_a) {
 
 /***/ }),
 
-/***/ "./src/components/TrustScoreDisplay.tsx":
-/*!**********************************************!*\
-  !*** ./src/components/TrustScoreDisplay.tsx ***!
-  \**********************************************/
+/***/ "./src/components/TrustScoreBox.tsx":
+/*!******************************************!*\
+  !*** ./src/components/TrustScoreBox.tsx ***!
+  \******************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -34981,35 +34981,40 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
 
-// extension/src/components/TrustScoreDisplay.tsx
+// extension/src/components/TrustScoreBox.tsx
 
-var TrustScoreDisplay = function (_a) {
-    var trustScore = _a.trustScore, deductions = _a.deductions, onClick = _a.onClick;
-    var _b = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(false), showDetails = _b[0], setShowDetails = _b[1]; // State to toggle deduction details
-    if (trustScore === null) {
-        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { className: "phishershield-score-display safe", style: { cursor: 'default' }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("p", { children: "Checking trust score..." }) }));
+var TrustScoreBox = function (_a) {
+    var score = _a.score, deductions = _a.deductions;
+    var _b = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(false), showDetails = _b[0], setShowDetails = _b[1];
+    if (score === null) {
+        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { style: { padding: '10px', textAlign: 'center', fontFamily: 'sans-serif', backgroundColor: '#f0f0f0', border: '1px solid #ccc', borderRadius: '5px' }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("p", { style: { margin: 0, color: '#555' }, children: "Checking trust score..." }) }));
     }
-    var isSuspicious = trustScore < 50;
-    var scoreClass = isSuspicious ? 'suspicious' : 'safe';
-    var handleClick = function () {
-        console.log('[TrustScoreDisplay] Clicked! Deductions:', deductions); // Debug log
-        if (deductions && deductions.length > 0) { // Only toggle if there are deductions to show
-            setShowDetails(!showDetails);
-        }
-        onClick === null || onClick === void 0 ? void 0 : onClick(); // Call external onClick if provided
+    var isSuspicious = score < 50;
+    var scoreColor = isSuspicious ? '#dc3545' : '#28a745';
+    var bgColor = isSuspicious ? '#ffebeb' : '#e6ffed';
+    var borderColor = isSuspicious ? '#dc3545' : '#28a745';
+    var hasDeductions = deductions && deductions.length > 0;
+    var scoreBoxStyles = {
+        marginTop: '10px',
+        padding: '12px',
+        borderRadius: '5px',
+        border: "1px solid ".concat(borderColor),
+        backgroundColor: bgColor,
+        textAlign: 'center',
+        cursor: hasDeductions ? 'pointer' : 'default',
+        transition: 'background-color 0.2s',
+        boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
     };
-    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { className: "phishershield-score-display ".concat(scoreClass), onClick: handleClick, style: { cursor: (deductions && deductions.length > 0) ? 'pointer' : 'default' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("p", { children: ["Trust Score: ", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("strong", { children: trustScore })] }), deductions && deductions.length > 0 && ( // Only show arrow if deductions exist
-            (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("span", { style: { marginLeft: '10px', fontSize: '0.8em', verticalAlign: 'middle' }, children: [showDetails ? '▲' : '▼', " "] })), showDetails && deductions && deductions.length > 0 && ( // Display deductions
-            (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { style: {
+    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { style: scoreBoxStyles, onClick: function () { return hasDeductions && setShowDetails(!showDetails); }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { style: { display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("p", { style: { margin: 0, fontSize: '1em', color: scoreColor, fontWeight: 'bold' }, children: ["Trust Score: ", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("strong", { children: score })] }), hasDeductions && ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("span", { style: { color: scoreColor, fontSize: '0.8em', lineHeight: '1em' }, children: showDetails ? '▲' : '▼' }))] }), showDetails && ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { style: {
                     marginTop: '15px',
                     paddingTop: '10px',
-                    borderTop: '1px solid #eee',
+                    borderTop: '1px solid #ddd',
                     textAlign: 'left',
                     fontSize: '0.85em',
                     color: '#666'
-                }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("p", { style: { fontWeight: 'bold', marginBottom: '5px', color: '#444' }, children: "Deductions:" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("ul", { style: { listStyleType: 'none', padding: 0, margin: 0 }, children: deductions.map(function (deduction, index) { return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("li", { style: { marginBottom: '3px' }, children: ["- ", deduction] }, index)); }) })] }))] }));
+                }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("p", { style: { fontWeight: 'bold', marginBottom: '5px' }, children: "Deductions:" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("ul", { style: { listStyleType: 'none', padding: 0, margin: 0 }, children: deductions.map(function (deduction, index) { return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("li", { style: { marginBottom: '3px' }, children: ["- ", deduction] }, index)); }) })] }))] }));
 };
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (TrustScoreDisplay);
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (TrustScoreBox);
 
 
 /***/ }),
@@ -35034,6 +35039,43 @@ __webpack_require__.r(__webpack_exports__);
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
 ___CSS_LOADER_EXPORT___.push([module.id, `/* extension/src/styles/popup.css */
+:root {
+    --bg-color: #f8faff;
+    --text-color: #333;
+    --heading-color: #2c3e50;
+    --border-color: #e0e6ed;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --suspicious-bg: #ffebeb;
+    --suspicious-border: #dc3545;
+    --suspicious-text: #dc3545;
+    --safe-bg: #e6ffed;
+    --safe-border: #28a745;
+    --safe-text: #28a745;
+    --ai-bg: #e0f2f7;
+    --ai-border: #00bcd4;
+    --ai-text: #006064;
+}
+
+/* Override variables for Dark Mode */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg-color: #2c2f33;
+        --text-color: #f1f2f3;
+        --heading-color: #f1f2f3;
+        --border-color: #4a4d50;
+        --shadow-color: rgba(0, 0, 0, 0.4);
+        --suspicious-bg: #4f2d2d;
+        --suspicious-border: #dc3545;
+        --suspicious-text: #ffc2c2;
+        --safe-bg: #2d4f3b;
+        --safe-border: #28a745;
+        --safe-text: #e6ffed;
+        --ai-bg: #2b393b;
+        --ai-border: #008c9e;
+        --ai-text: #d4f0f7;
+    }
+}
+
 
 /* General Popup Container */
 .phishershield-popup-container {
@@ -35123,7 +35165,42 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* extension/src/styles/popup.css */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
-}`, "",{"version":3,"sources":["webpack://./src/styles/popup.css"],"names":[],"mappings":"AAAA,mCAAmC;;AAEnC,4BAA4B;AAC5B;IACI,4DAA4D;IAC5D,aAAa;IACb,YAAY,EAAE,qCAAqC;IACnD,iBAAiB,EAAE,iCAAiC;IACpD,yBAAyB,EAAE,qBAAqB;IAChD,mBAAmB,EAAE,oBAAoB;IACzC,yCAAyC,EAAE,gBAAgB;IAC3D,WAAW;IACX,aAAa;IACb,sBAAsB;IACtB,8BAA8B,EAAE,oCAAoC;IACpE,sBAAsB,EAAE,kCAAkC;IAC1D,wCAAwC,EAAE,6BAA6B;AAC3E;;AAEA;IACI,gBAAgB;IAChB,cAAc,EAAE,iCAAiC;IACjD,kBAAkB;IAClB,mBAAmB;IACnB,gBAAgB;AACpB;;AAEA,yBAAyB;AACzB;IACI,kBAAkB;IAClB,YAAY,EAAE,4BAA4B;IAC1C,gBAAgB;IAChB,WAAW;AACf;;AAEA;IACI,cAAc,EAAE,mBAAmB;IACnC,iBAAiB;AACrB;;AAEA,uEAAuE;AACvE,+DAA+D;;AAE/D,gBAAgB;AAChB,uCAAuC,yDAAyD;IAC5F,gBAAgB;IAChB,iBAAiB;IACjB,6BAA6B,EAAE,oBAAoB;IACnD,kBAAkB;AACtB;;AAEA;IACI,gBAAgB;IAChB,WAAW;IACX,mBAAmB;AACvB;;AAEA;IACI,wBAAwB,EAAE,uBAAuB;IACjD,aAAa;IACb,mBAAmB;IACnB,yBAAyB;IACzB,kBAAkB;IAClB,gBAAgB;IAChB,yBAAyB,EAAE,wCAAwC;IACnE,cAAc;IACd,eAAe,EAAE,+BAA+B;AACpD;;AAEA;IACI,yBAAyB,EAAE,sBAAsB;IACjD,YAAY;IACZ,kBAAkB;IAClB,YAAY;IACZ,kBAAkB;IAClB,eAAe;IACf,iBAAiB;IACjB,iBAAiB;IACjB,6CAA6C;IAC7C,WAAW;AACf;;AAEA;IACI,yBAAyB;AAC7B;;AAEA,eAAe;AACf;IACI,OAAO,UAAU,EAAE,2BAA2B,EAAE;IAChD,KAAK,UAAU,EAAE,wBAAwB,EAAE;AAC/C","sourcesContent":["/* extension/src/styles/popup.css */\r\n\r\n/* General Popup Container */\r\n.phishershield-popup-container {\r\n    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\r\n    padding: 20px;\r\n    width: 320px; /* Slightly wider for better layout */\r\n    min-height: 250px; /* Ensure a decent minimum size */\r\n    background-color: #f8faff; /* Light background */\r\n    border-radius: 12px; /* Rounded corners */\r\n    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Soft shadow */\r\n    color: #333;\r\n    display: flex;\r\n    flex-direction: column;\r\n    justify-content: space-between; /* Pushes content and footer apart */\r\n    box-sizing: border-box; /* Include padding in dimensions */\r\n    animation: fadeIn 0.2s ease-out forwards; /* Simple fade-in animation */\r\n}\r\n\r\n.phishershield-popup-container h1 {\r\n    font-size: 1.8em;\r\n    color: #2c3e50; /* Darker blue-gray for heading */\r\n    text-align: center;\r\n    margin-bottom: 20px;\r\n    font-weight: 700;\r\n}\r\n\r\n/* Loading/Error States */\r\n.phishershield-status-message {\r\n    text-align: center;\r\n    margin: auto; /* Centers text vertically */\r\n    font-size: 1.1em;\r\n    color: #555;\r\n}\r\n\r\n.phishershield-status-message.error {\r\n    color: #dc3545; /* Red for errors */\r\n    font-weight: bold;\r\n}\r\n\r\n/* Trust Score Display (reuses existing .phishershield-score-display) */\r\n/* Alert Banner (reuses existing .phishershield-alert-banner) */\r\n\r\n/* Report Form */\r\n.phishershield-report-form-container { /* Add this class to ReportPhishingForm's outermost div */\r\n    margin-top: 25px;\r\n    padding-top: 15px;\r\n    border-top: 1px solid #e0e6ed; /* Light separator */\r\n    text-align: center;\r\n}\r\n\r\n.phishershield-report-form-container p {\r\n    font-size: 0.9em;\r\n    color: #777;\r\n    margin-bottom: 15px;\r\n}\r\n\r\n.phishershield-report-form-container input[type=\"text\"] {\r\n    width: calc(100% - 20px); /* Adjust for padding */\r\n    padding: 10px;\r\n    margin-bottom: 15px;\r\n    border: 1px solid #ced4da;\r\n    border-radius: 6px;\r\n    font-size: 0.9em;\r\n    background-color: #e9ecef; /* Light gray background for read-only */\r\n    color: #495057;\r\n    cursor: default; /* Indicate it's not editable */\r\n}\r\n\r\n.phishershield-report-form-container button {\r\n    background-color: #ff9800; /* Orange for Report */\r\n    color: white;\r\n    padding: 10px 15px;\r\n    border: none;\r\n    border-radius: 5px;\r\n    cursor: pointer;\r\n    font-size: 0.95em;\r\n    font-weight: bold;\r\n    transition: background-color 0.2s ease-in-out;\r\n    width: 100%;\r\n}\r\n\r\n.phishershield-report-form-container button:hover {\r\n    background-color: #e68900;\r\n}\r\n\r\n/* Animations */\r\n@keyframes fadeIn {\r\n    from { opacity: 0; transform: translateY(10px); }\r\n    to { opacity: 1; transform: translateY(0); }\r\n}"],"sourceRoot":""}]);
+}
+
+/* extension/src/styles/popup.css */
+
+/* ... (rest of popup.css) ... */
+
+/* --- MODIFIED: Keyframes for 3D Rotation --- */
+/* extension/src/styles/popup.css */
+
+/* ... (rest of popup.css) ... */
+
+/* --- MODIFIED: Keyframes for a more dynamic animation --- */
+@keyframes dynamic-spin {
+    0% {
+        transform: rotateY(0deg);
+    }
+    50% {
+        transform: rotateY(360deg);
+        animation-timing-function: cubic-bezier(0.8, 0, 1, 1); /* Slow down towards the end of the first half */
+    }
+    100% {
+        transform: rotateY(720deg);
+    }
+}
+
+.phishershield-logo-spinner {
+    animation: dynamic-spin 2s cubic-bezier(0, 0.5, 0.5, 1) infinite; /* Use a custom bezier curve for a quick start and slow end */
+    width: 60px;
+    height: 60px;
+}
+/* --- END MODIFIED --- */
+
+/* ... (rest of popup.css) ... */
+/* --- END MODIFIED --- */
+
+/* ... (rest of popup.css) ... */`, "",{"version":3,"sources":["webpack://./src/styles/popup.css"],"names":[],"mappings":"AAAA,mCAAmC;AACnC;IACI,mBAAmB;IACnB,kBAAkB;IAClB,wBAAwB;IACxB,uBAAuB;IACvB,kCAAkC;IAClC,wBAAwB;IACxB,4BAA4B;IAC5B,0BAA0B;IAC1B,kBAAkB;IAClB,sBAAsB;IACtB,oBAAoB;IACpB,gBAAgB;IAChB,oBAAoB;IACpB,kBAAkB;AACtB;;AAEA,qCAAqC;AACrC;IACI;QACI,mBAAmB;QACnB,qBAAqB;QACrB,wBAAwB;QACxB,uBAAuB;QACvB,kCAAkC;QAClC,wBAAwB;QACxB,4BAA4B;QAC5B,0BAA0B;QAC1B,kBAAkB;QAClB,sBAAsB;QACtB,oBAAoB;QACpB,gBAAgB;QAChB,oBAAoB;QACpB,kBAAkB;IACtB;AACJ;;;AAGA,4BAA4B;AAC5B;IACI,4DAA4D;IAC5D,aAAa;IACb,YAAY,EAAE,qCAAqC;IACnD,iBAAiB,EAAE,iCAAiC;IACpD,yBAAyB,EAAE,qBAAqB;IAChD,mBAAmB,EAAE,oBAAoB;IACzC,yCAAyC,EAAE,gBAAgB;IAC3D,WAAW;IACX,aAAa;IACb,sBAAsB;IACtB,8BAA8B,EAAE,oCAAoC;IACpE,sBAAsB,EAAE,kCAAkC;IAC1D,wCAAwC,EAAE,6BAA6B;AAC3E;;AAEA;IACI,gBAAgB;IAChB,cAAc,EAAE,iCAAiC;IACjD,kBAAkB;IAClB,mBAAmB;IACnB,gBAAgB;AACpB;;AAEA,yBAAyB;AACzB;IACI,kBAAkB;IAClB,YAAY,EAAE,4BAA4B;IAC1C,gBAAgB;IAChB,WAAW;AACf;;AAEA;IACI,cAAc,EAAE,mBAAmB;IACnC,iBAAiB;AACrB;;AAEA,uEAAuE;AACvE,+DAA+D;;AAE/D,gBAAgB;AAChB,uCAAuC,yDAAyD;IAC5F,gBAAgB;IAChB,iBAAiB;IACjB,6BAA6B,EAAE,oBAAoB;IACnD,kBAAkB;AACtB;;AAEA;IACI,gBAAgB;IAChB,WAAW;IACX,mBAAmB;AACvB;;AAEA;IACI,wBAAwB,EAAE,uBAAuB;IACjD,aAAa;IACb,mBAAmB;IACnB,yBAAyB;IACzB,kBAAkB;IAClB,gBAAgB;IAChB,yBAAyB,EAAE,wCAAwC;IACnE,cAAc;IACd,eAAe,EAAE,+BAA+B;AACpD;;AAEA;IACI,yBAAyB,EAAE,sBAAsB;IACjD,YAAY;IACZ,kBAAkB;IAClB,YAAY;IACZ,kBAAkB;IAClB,eAAe;IACf,iBAAiB;IACjB,iBAAiB;IACjB,6CAA6C;IAC7C,WAAW;AACf;;AAEA;IACI,yBAAyB;AAC7B;;AAEA,eAAe;AACf;IACI,OAAO,UAAU,EAAE,2BAA2B,EAAE;IAChD,KAAK,UAAU,EAAE,wBAAwB,EAAE;AAC/C;;AAEA,mCAAmC;;AAEnC,gCAAgC;;AAEhC,gDAAgD;AAChD,mCAAmC;;AAEnC,gCAAgC;;AAEhC,6DAA6D;AAC7D;IACI;QACI,wBAAwB;IAC5B;IACA;QACI,0BAA0B;QAC1B,qDAAqD,EAAE,gDAAgD;IAC3G;IACA;QACI,0BAA0B;IAC9B;AACJ;;AAEA;IACI,gEAAgE,EAAE,6DAA6D;IAC/H,WAAW;IACX,YAAY;AAChB;AACA,yBAAyB;;AAEzB,gCAAgC;AAChC,yBAAyB;;AAEzB,gCAAgC","sourcesContent":["/* extension/src/styles/popup.css */\r\n:root {\r\n    --bg-color: #f8faff;\r\n    --text-color: #333;\r\n    --heading-color: #2c3e50;\r\n    --border-color: #e0e6ed;\r\n    --shadow-color: rgba(0, 0, 0, 0.1);\r\n    --suspicious-bg: #ffebeb;\r\n    --suspicious-border: #dc3545;\r\n    --suspicious-text: #dc3545;\r\n    --safe-bg: #e6ffed;\r\n    --safe-border: #28a745;\r\n    --safe-text: #28a745;\r\n    --ai-bg: #e0f2f7;\r\n    --ai-border: #00bcd4;\r\n    --ai-text: #006064;\r\n}\r\n\r\n/* Override variables for Dark Mode */\r\n@media (prefers-color-scheme: dark) {\r\n    :root {\r\n        --bg-color: #2c2f33;\r\n        --text-color: #f1f2f3;\r\n        --heading-color: #f1f2f3;\r\n        --border-color: #4a4d50;\r\n        --shadow-color: rgba(0, 0, 0, 0.4);\r\n        --suspicious-bg: #4f2d2d;\r\n        --suspicious-border: #dc3545;\r\n        --suspicious-text: #ffc2c2;\r\n        --safe-bg: #2d4f3b;\r\n        --safe-border: #28a745;\r\n        --safe-text: #e6ffed;\r\n        --ai-bg: #2b393b;\r\n        --ai-border: #008c9e;\r\n        --ai-text: #d4f0f7;\r\n    }\r\n}\r\n\r\n\r\n/* General Popup Container */\r\n.phishershield-popup-container {\r\n    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\r\n    padding: 20px;\r\n    width: 320px; /* Slightly wider for better layout */\r\n    min-height: 250px; /* Ensure a decent minimum size */\r\n    background-color: #f8faff; /* Light background */\r\n    border-radius: 12px; /* Rounded corners */\r\n    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Soft shadow */\r\n    color: #333;\r\n    display: flex;\r\n    flex-direction: column;\r\n    justify-content: space-between; /* Pushes content and footer apart */\r\n    box-sizing: border-box; /* Include padding in dimensions */\r\n    animation: fadeIn 0.2s ease-out forwards; /* Simple fade-in animation */\r\n}\r\n\r\n.phishershield-popup-container h1 {\r\n    font-size: 1.8em;\r\n    color: #2c3e50; /* Darker blue-gray for heading */\r\n    text-align: center;\r\n    margin-bottom: 20px;\r\n    font-weight: 700;\r\n}\r\n\r\n/* Loading/Error States */\r\n.phishershield-status-message {\r\n    text-align: center;\r\n    margin: auto; /* Centers text vertically */\r\n    font-size: 1.1em;\r\n    color: #555;\r\n}\r\n\r\n.phishershield-status-message.error {\r\n    color: #dc3545; /* Red for errors */\r\n    font-weight: bold;\r\n}\r\n\r\n/* Trust Score Display (reuses existing .phishershield-score-display) */\r\n/* Alert Banner (reuses existing .phishershield-alert-banner) */\r\n\r\n/* Report Form */\r\n.phishershield-report-form-container { /* Add this class to ReportPhishingForm's outermost div */\r\n    margin-top: 25px;\r\n    padding-top: 15px;\r\n    border-top: 1px solid #e0e6ed; /* Light separator */\r\n    text-align: center;\r\n}\r\n\r\n.phishershield-report-form-container p {\r\n    font-size: 0.9em;\r\n    color: #777;\r\n    margin-bottom: 15px;\r\n}\r\n\r\n.phishershield-report-form-container input[type=\"text\"] {\r\n    width: calc(100% - 20px); /* Adjust for padding */\r\n    padding: 10px;\r\n    margin-bottom: 15px;\r\n    border: 1px solid #ced4da;\r\n    border-radius: 6px;\r\n    font-size: 0.9em;\r\n    background-color: #e9ecef; /* Light gray background for read-only */\r\n    color: #495057;\r\n    cursor: default; /* Indicate it's not editable */\r\n}\r\n\r\n.phishershield-report-form-container button {\r\n    background-color: #ff9800; /* Orange for Report */\r\n    color: white;\r\n    padding: 10px 15px;\r\n    border: none;\r\n    border-radius: 5px;\r\n    cursor: pointer;\r\n    font-size: 0.95em;\r\n    font-weight: bold;\r\n    transition: background-color 0.2s ease-in-out;\r\n    width: 100%;\r\n}\r\n\r\n.phishershield-report-form-container button:hover {\r\n    background-color: #e68900;\r\n}\r\n\r\n/* Animations */\r\n@keyframes fadeIn {\r\n    from { opacity: 0; transform: translateY(10px); }\r\n    to { opacity: 1; transform: translateY(0); }\r\n}\r\n\r\n/* extension/src/styles/popup.css */\r\n\r\n/* ... (rest of popup.css) ... */\r\n\r\n/* --- MODIFIED: Keyframes for 3D Rotation --- */\r\n/* extension/src/styles/popup.css */\r\n\r\n/* ... (rest of popup.css) ... */\r\n\r\n/* --- MODIFIED: Keyframes for a more dynamic animation --- */\r\n@keyframes dynamic-spin {\r\n    0% {\r\n        transform: rotateY(0deg);\r\n    }\r\n    50% {\r\n        transform: rotateY(360deg);\r\n        animation-timing-function: cubic-bezier(0.8, 0, 1, 1); /* Slow down towards the end of the first half */\r\n    }\r\n    100% {\r\n        transform: rotateY(720deg);\r\n    }\r\n}\r\n\r\n.phishershield-logo-spinner {\r\n    animation: dynamic-spin 2s cubic-bezier(0, 0.5, 0.5, 1) infinite; /* Use a custom bezier curve for a quick start and slow end */\r\n    width: 60px;\r\n    height: 60px;\r\n}\r\n/* --- END MODIFIED --- */\r\n\r\n/* ... (rest of popup.css) ... */\r\n/* --- END MODIFIED --- */\r\n\r\n/* ... (rest of popup.css) ... */"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___.toString());
 
@@ -35224,7 +35301,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var react_dom_client__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-dom/client */ "./node_modules/react-dom/client.js");
-/* harmony import */ var _components_TrustScoreDisplay__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../components/TrustScoreDisplay */ "./src/components/TrustScoreDisplay.tsx");
+/* harmony import */ var _components_TrustScoreBox__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../components/TrustScoreBox */ "./src/components/TrustScoreBox.tsx");
 /* harmony import */ var _components_AlertBanner__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../components/AlertBanner */ "./src/components/AlertBanner.tsx");
 /* harmony import */ var _components_ReportPhishingForm__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../components/ReportPhishingForm */ "./src/components/ReportPhishingForm.tsx");
 /* harmony import */ var _styles_popup_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./../styles/popup.css */ "./src/styles/popup.css");
@@ -35434,13 +35511,16 @@ var Popup = function () {
     }); };
     // Conditional rendering based on loading and error states
     if (isLoading) {
-        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { className: "phishershield-popup-container", children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("p", { className: "phishershield-status-message", children: "Loading PhisherShield..." }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("p", { className: "phishershield-status-message", children: ["Scanning: ", url || 'current tab'] })] }));
+        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { className: "phishershield-popup-container", style: { justifyContent: 'center', alignItems: 'center', gap: '20px' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("img", { 
+                    // CHANGE THIS LINE to use the filename of your new image
+                    src: "icons/loading.png" // <--- EXAMPLE
+                    , alt: "PhisherShield is scanning...", className: "phishershield-logo-spinner" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("p", { className: "phishershield-status-message", children: "Scanning in progress..." }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("p", { className: "phishershield-status-message", style: { fontSize: '0.9em' }, children: url || 'current tab' })] }));
     }
     if (error) {
         return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { className: "phishershield-popup-container", children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("h2", { className: "phishershield-status-message error", children: "Error" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("p", { className: "phishershield-status-message", children: error }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("p", { className: "phishershield-status-message", children: "Please ensure your backend server is running and accessible." })] }));
     }
     // Main render for the popup content
-    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { className: "phishershield-popup-container", children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("h1", { children: "PhisherShield Results " }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_components_TrustScoreDisplay__WEBPACK_IMPORTED_MODULE_3__["default"], { trustScore: trustScore, deductions: deductions }), geminiAiScore !== null && ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { style: { marginTop: '10px', padding: '8px', borderRadius: '5px', backgroundColor: '#e0f2f7', border: '1px solid #00bcd4', textAlign: 'center' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("p", { style: { fontSize: '0.9em', color: '#006064' }, children: ["AI Score: ", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("strong", { children: geminiAiScore })] }), geminiAiReason && (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("p", { style: { fontSize: '0.8em', color: '#006064', marginTop: '5px' }, children: geminiAiReason })] })), reportCount > 0 && ( // <--- NEW: Display report count if > 0
+    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { className: "phishershield-popup-container", children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("h1", { children: "PhisherShield Results " }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_components_TrustScoreBox__WEBPACK_IMPORTED_MODULE_3__["default"], { score: trustScore, deductions: deductions }), geminiAiScore !== null && ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { style: { marginTop: '10px', padding: '8px', borderRadius: '5px', backgroundColor: '#e0f2f7', border: '1px solid #00bcd4', textAlign: 'center' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("p", { style: { fontSize: '0.9em', color: '#006064' }, children: ["AI Score: ", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("strong", { children: geminiAiScore })] }), geminiAiReason && (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("p", { style: { fontSize: '0.8em', color: '#006064', marginTop: '5px' }, children: geminiAiReason })] })), reportCount > 0 && ( // <--- NEW: Display report count if > 0
             (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { style: { marginTop: '10px', padding: '8px', borderRadius: '5px', backgroundColor: '#fffbe6', border: '1px solid #ffcc00', textAlign: 'center' }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("p", { style: { fontSize: '0.9em', color: '#856404' }, children: ["Reported by ", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("strong", { children: reportCount }), " users via PhisherShield."] }) })), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_components_AlertBanner__WEBPACK_IMPORTED_MODULE_4__["default"], { message: alertMessage }), url && (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_components_ReportPhishingForm__WEBPACK_IMPORTED_MODULE_5__["default"], { url: url })] }));
 };
 // Mount the React app to the root div in popup.html

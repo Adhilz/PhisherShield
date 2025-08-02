@@ -1,4 +1,41 @@
 /* extension/src/styles/popup.css */
+:root {
+    --bg-color: #f8faff;
+    --text-color: #333;
+    --heading-color: #2c3e50;
+    --border-color: #e0e6ed;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --suspicious-bg: #ffebeb;
+    --suspicious-border: #dc3545;
+    --suspicious-text: #dc3545;
+    --safe-bg: #e6ffed;
+    --safe-border: #28a745;
+    --safe-text: #28a745;
+    --ai-bg: #e0f2f7;
+    --ai-border: #00bcd4;
+    --ai-text: #006064;
+}
+
+/* Override variables for Dark Mode */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg-color: #2c2f33;
+        --text-color: #f1f2f3;
+        --heading-color: #f1f2f3;
+        --border-color: #4a4d50;
+        --shadow-color: rgba(0, 0, 0, 0.4);
+        --suspicious-bg: #4f2d2d;
+        --suspicious-border: #dc3545;
+        --suspicious-text: #ffc2c2;
+        --safe-bg: #2d4f3b;
+        --safe-border: #28a745;
+        --safe-text: #e6ffed;
+        --ai-bg: #2b393b;
+        --ai-border: #008c9e;
+        --ai-text: #d4f0f7;
+    }
+}
+
 
 /* General Popup Container */
 .phishershield-popup-container {
@@ -89,3 +126,38 @@
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
 }
+
+/* extension/src/styles/popup.css */
+
+/* ... (rest of popup.css) ... */
+
+/* --- MODIFIED: Keyframes for 3D Rotation --- */
+/* extension/src/styles/popup.css */
+
+/* ... (rest of popup.css) ... */
+
+/* --- MODIFIED: Keyframes for a more dynamic animation --- */
+@keyframes dynamic-spin {
+    0% {
+        transform: rotateY(0deg);
+    }
+    50% {
+        transform: rotateY(360deg);
+        animation-timing-function: cubic-bezier(0.8, 0, 1, 1); /* Slow down towards the end of the first half */
+    }
+    100% {
+        transform: rotateY(720deg);
+    }
+}
+
+.phishershield-logo-spinner {
+    animation: dynamic-spin 2s cubic-bezier(0, 0.5, 0.5, 1) infinite; /* Use a custom bezier curve for a quick start and slow end */
+    width: 60px;
+    height: 60px;
+}
+/* --- END MODIFIED --- */
+
+/* ... (rest of popup.css) ... */
+/* --- END MODIFIED --- */
+
+/* ... (rest of popup.css) ... */

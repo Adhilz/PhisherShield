@@ -1,7 +1,7 @@
 // extension/src/pages/Popup.tsx
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom/client';
-import TrustScoreDisplay from '../components/TrustScoreDisplay'; // Imports TrustScoreDisplay component
+import TrustScoreBox from '../components/TrustScoreBox';  // Imports TrustScoreDisplay component
 import AlertBanner from '../components/AlertBanner';       // Imports AlertBanner component
 import ReportPhishingForm from '../components/ReportPhishingForm'; // Imports ReportPhishingForm component
 import popupStyles from './../styles/popup.css';// Imports the CSS for the popup
@@ -152,14 +152,21 @@ const Popup: React.FC = () => {
     };
 
     // Conditional rendering based on loading and error states
-    if (isLoading) {
-        return (
-            <div className="phishershield-popup-container">
-                <p className="phishershield-status-message">Loading PhisherShield...</p>
-                <p className="phishershield-status-message">Scanning: {url || 'current tab'}</p>
-            </div>
-        );
-    }
+   
+if (isLoading) {
+    return (
+        <div className="phishershield-popup-container" style={{ justifyContent: 'center', alignItems: 'center', gap: '20px' }}>
+            <img
+                // CHANGE THIS LINE to use the filename of your new image
+                src="icons/loading.png" // <--- EXAMPLE
+                alt="PhisherShield is scanning..."
+                className="phishershield-logo-spinner"
+            />
+            <p className="phishershield-status-message">Scanning in progress...</p>
+            <p className="phishershield-status-message" style={{ fontSize: '0.9em' }}>{url || 'current tab'}</p>
+        </div>
+    );
+}
 
     if (error) {
         return (
@@ -176,7 +183,7 @@ const Popup: React.FC = () => {
         <div className="phishershield-popup-container">
             <h1>PhisherShield Results </h1>
             {/* TrustScoreDisplay component (clickable to show deductions) */}
-            <TrustScoreDisplay trustScore={trustScore} deductions={deductions} />
+            <TrustScoreBox score={trustScore} deductions={deductions} />
 
             {/* Display Gemini AI Score separately if available */}
             {geminiAiScore !== null && (

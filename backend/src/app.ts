@@ -16,6 +16,7 @@ console.log('GOOGLE_SAFE_Browse_API_KEY:', process.env.GOOGLE_SAFE_Browse_API_KE
 console.log('WHOIS_XML_API_KEY:', process.env.WHOIS_XML_API_KEY ? 'Loaded' : 'NOT LOADED');
 console.log('ABUSE_IPDB_API_KEY:', process.env.ABUSE_IPDB_API_KEY ? 'Loaded' : 'NOT LOADED'); // <--- NEW LOG
 console.log('GEMINI_API_KEY:', process.env.GEMINI_API_KEY ? 'Loaded' : 'NOT LOADED');
+
 const app = express();
 app.use(express.json()); // Enable Express to parse JSON request bodies
 app.use(express.urlencoded({ extended: true })); // For URL-encoded bodies
