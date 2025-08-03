@@ -143,7 +143,7 @@ const Popup: React.FC = () => {
         } catch (err) {
             // Handle any errors during the fetch operation
             console.error('Error fetching trust score:', err);
-            setError(`Failed to scan URL. Error: ${err instanceof Error ? err.message : String(err)}`);
+            setError(`You're Offline or server is down. Please check your connection or try again later.`);
             setTrustScore(0); // Default to a low score on error
             setAlertMessage('Could not determine safety. Network error or API issue.');
         } finally {

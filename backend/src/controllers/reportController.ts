@@ -1,9 +1,9 @@
 // backend/src/controllers/reportController.ts
 import { Request, Response } from 'express';
-import { reportsCollection } from '../models/Report'; // Firestore collection
+import { reportsCollection } from '../models/Report';
 import { performScanAndCalculateScore } from './scanController';
 import * as admin from 'firebase-admin';
-import { queryHana } from '../hanaClient'; // Import HANA client
+import { queryHana } from '../hanaClient';
 
 // Extend Request type to include user property
 declare global {
@@ -59,30 +59,32 @@ export const createReport = async (req: Request, res: Response) => {
 
     try {
         let hanaSuccess = false;
-        // --- Write to HANA FIRST ---
-       try {
+        try {
             const hanaSql = `
                 INSERT INTO "GE210480"."PHISHER_REPORTS"
                 ("REPORTED_URL", "REPORT_DETAILS", "REPORTER_ID", "REPORTER_EMAIL", "STATUS", "TRUST_SCORE", "DEDUCTIONS", "TIMESTAMP")
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             `;
 
-            // --- CRITICAL FIX: Explicitly handle potential null/undefined values ---
-            const trustScore = typeof scanResultsData?.trustScore === 'number' ? scanResultsData.trustScore : 0;
-            const deductionsString = Array.isArray(scanResultsData?.deductions) ? scanResultsData.deductions.join('; ') : null;
+            const reportedUrlParam = reportedUrl ?? null;
+            const reportDetailsParam = reportDetails ?? null;
+            const reporterIdParam = user.uid ?? null;
+            const reporterEmailParam = user.email ?? null;
+            const statusParam = 'pending';
+            const trustScoreParam = typeof scanResultsData?.trustScore === 'number' ? scanResultsData.trustScore : 0;
+            const deductionsParam = Array.isArray(scanResultsData?.deductions) ? scanResultsData.deductions.join('; ') : null;
+            const timestampParam = new Date().toISOString();
 
             const hanaParams = [
-                reportedUrl ?? null,
-                reportDetails ?? null,
-                user.uid ?? null,
-                user.email ?? null,
-                'pending',
-                trustScore,
-                deductionsString,
-                new Date().toISOString()
+                reportedUrlParam,
+                reportDetailsParam,
+                reporterIdParam,
+                reporterEmailParam,
+                statusParam,
+                trustScoreParam,
+                deductionsParam,
+                timestampParam
             ];
-            // --- END CRITICAL FIX ---
-
 
             console.log('[DEBUG] Inserting into SAP HANA with parameters:', hanaParams);
 
@@ -93,7 +95,6 @@ export const createReport = async (req: Request, res: Response) => {
             console.error('[SAP HANA] Failed to insert report:', hanaError);
         }
 
-        // --- Write to Firestore SECOND ---
         const firestoreReportData = {
             reportedUrl,
             reportDetails,
@@ -114,12 +115,11 @@ export const createReport = async (req: Request, res: Response) => {
         }
 
     } catch (error) {
-        console.error('[Backend] Report submission failed:', error);
+        console.error('Error submitting report:', error);
         res.status(500).json({ message: 'Failed to submit report.', error });
     }
 };
 
-// Get reports by authenticated user
 export const getUserReports = async (req: Request, res: Response) => {
     const user = req.user;
     if (!user || !user.uid) {
@@ -140,7 +140,6 @@ export const getUserReports = async (req: Request, res: Response) => {
     }
 };
 
-// Get all reports (admin usage)
 export const getAllReports = async (_req: Request, res: Response) => {
     try {
         const allReportsSnapshot = await reportsCollection.orderBy('timestamp', 'desc').get();
@@ -152,7 +151,6 @@ export const getAllReports = async (_req: Request, res: Response) => {
     }
 };
 
-// Get report count for a given URL
 export const getReportCount = async (req: Request, res: Response) => {
     const { url } = req.query;
 

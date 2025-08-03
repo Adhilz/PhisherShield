@@ -35498,7 +35498,7 @@ var Popup = function () {
                     err_1 = _a.sent();
                     // Handle any errors during the fetch operation
                     console.error('Error fetching trust score:', err_1);
-                    setError("Failed to scan URL. Error: ".concat(err_1 instanceof Error ? err_1.message : String(err_1)));
+                    setError("You're Offline or server is down. Please check your connection or try again later.");
                     setTrustScore(0); // Default to a low score on error
                     setAlertMessage('Could not determine safety. Network error or API issue.');
                     return [3 /*break*/, 8];
