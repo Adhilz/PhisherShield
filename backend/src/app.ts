@@ -27,7 +27,7 @@ app.use(express.urlencoded({ extended: true }))
 // --- CRITICAL FIX: Enable CORS for BOTH ports ---
 app.use(
   cors({
-    origin: ["http://localhost:3000", "http://localhost:3001"], // <-- ADD 3001
+    origin: ["http://localhost:3001", "http://localhost:3001"], // <-- ADD 3001
     credentials: true,
   }),
 )
@@ -40,7 +40,7 @@ app.use("/api/report", reportRoute)
 
 app.listen(4000, () => {
   console.log("🚀 PhisherShield Backend running on http://localhost:4000")
-  console.log("📡 Ready to receive reports from http://localhost:3000 and http://localhost:3001") // <-- UPDATE MESSAGE
+  console.log("📡 Ready to receive reports from http://localhost:3001 and http://localhost:3001") // <-- UPDATE MESSAGE
   console.log("🏥 Health check: http://localhost:4000/api/health")
   console.log("📝 Report endpoint: POST http://localhost:4000/api/report")
 })

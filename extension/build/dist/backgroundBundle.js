@@ -263,7 +263,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) { 
                 return [4 /*yield*/, retrySendMessage(tabId, { type: 'removePhishingAlert' }, 1)];
             case 3:
                 _c.sent();
-                chrome.tabs.create({ url: "http://localhost:4000/report?url=".concat(encodeURIComponent(originalUrl)) });
+                chrome.tabs.create({ url: "http://localhost:3001/?url=".concat(encodeURIComponent(originalUrl)) }); // FIXED URL
                 console.log("[Background] Opened report page for ".concat(originalUrl));
                 return [3 /*break*/, 6];
             case 4:

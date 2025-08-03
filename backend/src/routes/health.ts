@@ -13,7 +13,7 @@ router.get("/health", (req, res) => {
     services: {
       database: "Connected",
       firebase: "Connected",
-      cors: "Enabled for localhost:3000",
+      cors: "Enabled for localhost:3001",
     },
   })
 })

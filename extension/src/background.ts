@@ -179,7 +179,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
         } else if (action === "report") {
             bypassingTabs.add(tabId);
             await retrySendMessage(tabId, { type: 'removePhishingAlert' }, 1);
-            chrome.tabs.create({ url: `http://localhost:4000/report?url=${encodeURIComponent(originalUrl)}` });
+            chrome.tabs.create({ url: `http://localhost:3001/?url=${encodeURIComponent(originalUrl)}` }); // FIXED URL
             console.log(`[Background] Opened report page for ${originalUrl}`);
         } else if (action === "block") {
             bypassingTabs.add(tabId);

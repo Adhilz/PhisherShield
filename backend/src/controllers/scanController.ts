@@ -185,7 +185,46 @@ const checkIpReputation = async (ipAddress: string): Promise<any> => {
         return { abuseConfidenceScore: 0, isWhitelisted: false };
     }
 };
+// backend/src/controllers/scanController.ts
+// ... (rest of the file) ...
 
+// NEW: Function to check URL against URLScan.io API (Public API)
+const checkUrlScan = async (url: string): Promise<boolean> => {
+    console.log(`[Backend-URLScan] Checking URL against URLScan.io (Public API): ${url}`);
+    // The public API does not require an API key, so we remove that check.
+
+    const apiUrl = 'https://urlscan.io/api/v1/search/';
+    const params = {
+        q: `domain:${(new URL(url)).hostname} OR url:"${url}"`
+    };
+
+    try {
+        const response = await axios.get(apiUrl, { params: params }); // <--- REMOVED HEADERS
+        const result = response.data;
+
+        if (result.results && result.results.length > 0) {
+             const isMalicious = result.results.some((scanResult: any) =>
+                scanResult.task.url === url && scanResult.verdicts.overall.malicious
+             );
+             if (isMalicious) {
+                 console.log(`[Backend-URLScan] URL is a known malicious site.`);
+                 return true;
+             } else {
+                 console.log(`[Backend-URLScan] URL found in database but not marked as malicious.`);
+                 return false;
+             }
+        } else {
+             console.log(`[Backend-URLScan] URL not found in database.`);
+             return false;
+        }
+
+    } catch (error) {
+        console.error(`[Backend-URLScan] Error calling URLScan.io API for ${url}:`, error instanceof Error ? error.message : error);
+        return false;
+    }
+};
+
+// ... (rest of the file) ...
 // Helper to get the root domain from a hostname
 const getRootDomain = (hostname: string): string => {
     const parsed = psl.parse(hostname);
@@ -335,6 +374,7 @@ const fetchReportCount = async (url: string): Promise<number> => {
  * Core function to perform a scan and calculate the trust score.
  * This function now RETURNS the result, instead of sending an Express response.
  */
+
 export const performScanAndCalculateScore = async (
     url: string,
     content: string = '',

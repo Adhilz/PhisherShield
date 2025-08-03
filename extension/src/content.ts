@@ -11,16 +11,26 @@ let alertOverlayContainer: HTMLDivElement | null = null;
 
 // --- Function to manually inject CSS ---
 function injectCss(cssString: string) {
+    // Remove any existing PhisherShield styles to prevent conflicts
+    const existingStyles = document.querySelectorAll('style[data-phishershield]');
+    existingStyles.forEach(style => style.remove());
+    
     const styleTag = document.createElement('style');
+    styleTag.setAttribute('data-phishershield', 'true');
     styleTag.textContent = cssString;
     // Append to document.documentElement (<html>) for more robust full-screen coverage
     (document.head || document.documentElement).appendChild(styleTag);
-    console.log('[Content Script] Injected alert-overlay.css dynamically.');
+    console.log('[Content Script] Injected alert-overlay.css dynamically with unique identifier.');
 }
 
 // <--- CRITICAL FIX: Ensure this call is ONLY here, immediately after the function definition.
 // It will be the first function call after global variable declarations.
 injectCss(alertOverlayStyles);
+
+// Also inject CSS when DOM is ready to ensure it's applied
+document.addEventListener('DOMContentLoaded', () => {
+    injectCss(alertOverlayStyles);
+});
 
 
 // --- Function to detect client-side redirects ---
@@ -137,7 +147,9 @@ function displayPhishingAlertOverlay() {
             left: '0',
             width: '100%',
             height: '100%',
-            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+            background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 249, 250, 0.95) 100%)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
             zIndex: '2147483647',
             display: 'flex',
             justifyContent: 'center',
